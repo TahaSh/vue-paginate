@@ -1,0 +1,24 @@
+{
+  "name": "vue-paginate",
+  "version": "1.0.0",
+  "description": "A simple vue.js plugin to paginate data",
+  "main": "vue-paginate.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TahaSh/vue-paginate.git"
+  },
+  "keywords": [
+    "paginate",
+    "pagination",
+    "page",
+    "chunk",
+    "navigate",
+    "slice",
+    "vue"
+  ],
+  "dependencies": {
+    "vue": "^1.0.16"
+  },
+  "author": "Taha Shashtari",
+  "license": "MIT"
+}
