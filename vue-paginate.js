@@ -13,6 +13,15 @@
         }
     };
 
+    function setNumberOfPages (vm, listName, length) {
+        state[listName].numberOfItems = length;
+        state[listName].numberOfPages = Math.ceil(state[listName].numberOfItems / state[listName].perPage);
+
+        // Set numberOfPages on the vm instance 
+        // so you can use it in your links section.
+        vm.$set(listName + 'Links', state[listName].numberOfPages);
+    }
+
     vuePaginate.install = function (Vue) {
         Vue.directive('paginate', {
             twoWay: true,
@@ -35,13 +44,9 @@
                 vm.$set('full' + helpers.capitalize(listName), originalLists[listName]);
 
                 state[listName] = { currentPage: 0 };
-                state[listName].numberOfItems = originalLists[listName].length;
                 state[listName].perPage = perPage;
-                state[listName].numberOfPages = Math.ceil(state[listName].numberOfItems / state[listName].perPage);
-
-                // Set numberOfPages on the vm instance 
-                // so you can use it in your links section.
-                vm.$set(listName + 'Links', state[listName].numberOfPages);
+                
+                setNumberOfPages(vm, listName, originalLists[listName].length);
 
                 vm['change' + helpers.capitalize(listName) + 'Page'] = function (page) {
                     // Reset the list with original data for two reasons:
@@ -69,13 +74,20 @@
                         0;
                 };
 
-                // Turn on warnings
+                vm['refresh' + helpers.capitalize(listName) + 'Page'] = function () {
+                    vm['change' + helpers.capitalize(listName) + 'Page'](0);
+                };
+
+                // Turn on warnings back
                 Vue.config.silent = false;
             },
 
             update: function (list) {
                 var listName = this.expression;
-                
+
+                // Refresh number of pages (useful in case you're filtering the list)
+                setNumberOfPages(this.vm, listName, list.length);
+
                 state[listName].currentPage = state[listName].currentPage >= state[listName].numberOfPages ?
                     state[listName].numberOfPages - 1 : 
                     state[listName].currentPage;
@@ -97,3 +109,4 @@
     }
 
 })();
+
