@@ -43,6 +43,11 @@
                 // Set the full version on the vm
                 vm.$set('full' + helpers.capitalize(listName), originalLists[listName]);
 
+                vm.$watch('full' + helpers.capitalize(listName), function (newVal, oldVal) {
+                  originalLists[listName] = newVal;
+                  vm['refresh' + helpers.capitalize(listName) + 'Page']();
+                });
+                
                 state[listName] = { currentPage: 0 };
                 state[listName].perPage = perPage;
                 
