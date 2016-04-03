@@ -128,3 +128,4 @@ another list named `full[listName]`. So for this example it would be
 
 - `[listName]Links`: The total number of pages of the list.
 - `full[listName]`: The full version of the list (before slicing).
+- `current[listName]Page`: The current page of the list you're viewing (e.g. `currentLangsPage`).

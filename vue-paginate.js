@@ -97,6 +97,8 @@
                     state[listName].numberOfPages - 1 : 
                     state[listName].currentPage;
 
+                this.vm.$set('current' + helpers.capitalize(listName) + 'Page', state[listName].currentPage);
+                
                 var index = state[listName].currentPage * state[listName].perPage;
                 
                 this.set(list.slice(index, index + state[listName].perPage));
