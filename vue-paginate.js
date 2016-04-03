@@ -22,6 +22,13 @@
         vm.$set(listName + 'Links', state[listName].numberOfPages);
     }
 
+    function setCurrentPage (vm, listName) {
+        Vue.config.silent = true;
+        vm.$set('current' + helpers.capitalize(listName) + 'Page', state[listName].currentPage);
+        Vue.config.silent = false;
+    }
+
+
     vuePaginate.install = function (Vue) {
         Vue.directive('paginate', {
             twoWay: true,
@@ -97,7 +104,7 @@
                     state[listName].numberOfPages - 1 : 
                     state[listName].currentPage;
 
-                this.vm.$set('current' + helpers.capitalize(listName) + 'Page', state[listName].currentPage);
+                setCurrentPage(this.vm, listName);
                 
                 var index = state[listName].currentPage * state[listName].perPage;
                 
