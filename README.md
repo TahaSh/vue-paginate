@@ -114,11 +114,19 @@ When your number of pages gets bigger, it becomes unpractical to display all of 
 All you have to do is to use `limited[listName]Links` in place of `[listName]Links`. As a default, your links will be limited to `4`, but of course you can change it by using the parameter `limit` along with `v-paginate`. For example:
 
 ``` html
+<!-- Data -->
 <section v-paginate:2="posts" limit="2">
   <ul v-for="post in posts">
     <li>{{ post }}</li>
   </ul>
 </section>
+
+<!-- Links -->
+<ul class="links">
+  <li v-for="postLink in limitedPostsLinks">
+    <a :class="{active: currentPostsPage == postLink}" href="#" @click="changePostsPage(postLink)">{{ postLink }}</a>
+  </li>
+</ul>
 ```
 
 #### Updating the full list manually
