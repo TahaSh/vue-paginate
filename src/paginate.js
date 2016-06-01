@@ -28,7 +28,7 @@ export default {
 
     var vm = this.vm;
     this.listName = this.expression;
-    var perPage = +this.arg;
+    var perPage = this.getPerPage();
     var limit = +this.params.limit;
 
     if (!vm[this.listName]) {
@@ -45,6 +45,13 @@ export default {
       this.originalList = newVal;
       vm['refresh' + utils.capitalize(this.listName) + 'Page']();
     });
+
+    if (this.isPerPageDynamic()) {
+      vm.$watch(this.arg, (newVal) => {
+        this.list.perPage = +newVal <= 0 ? 1 : +newVal;
+        vm['refresh' + utils.capitalize(this.listName) + 'Page']();
+      });
+    }
 
     this.list = { currentPage: 0, initial: 0, perPage };
 
@@ -86,7 +93,7 @@ export default {
     };
 
     vm['refresh' + utils.capitalize(this.listName) + 'Page'] = () => {
-      vm['change' + utils.capitalize(this.listName) + 'Page'](0);
+      vm['change' + utils.capitalize(this.listName) + 'Page'](1);
     };
 
     // Turn on warnings back
@@ -134,5 +141,30 @@ export default {
         ).generate(limit);
 
     this.vm.$set('limited' + utils.capitalize(this.listName) + 'Links', links);
+  },
+
+  getPerPage () {
+    let vm = this.vm;
+    let arg = this.arg;
+    let regex = new RegExp(arg, 'i')
+
+    if (! this.isPerPageDynamic()) {
+      return +arg
+    }
+
+    if (isDynamicPerPageValid()) {
+      this.arg = getDynamicArg();
+      return +vm[this.arg];
+    }
+
+    return 1;
+
+    function getDynamicArg() { return Object.keys(vm.$data).find(a => a.match(regex)) }
+    function isDynamicPerPageValid () { return +vm[getDynamicArg()] > 0; }
+  },
+
+  isPerPageDynamic () {
+    return ! Number.isInteger(Number.parseInt(this.arg));
   }
+
 }

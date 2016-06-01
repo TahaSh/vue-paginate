@@ -253,7 +253,7 @@ exports.default = {
 
     var vm = this.vm;
     this.listName = this.expression;
-    var perPage = +this.arg;
+    var perPage = this.getPerPage();
     var limit = +this.params.limit;
 
     if (!vm[this.listName]) {
@@ -270,6 +270,13 @@ exports.default = {
       _this.originalList = newVal;
       vm['refresh' + _utils2.default.capitalize(_this.listName) + 'Page']();
     });
+
+    if (this.isPerPageDynamic()) {
+      vm.$watch(this.arg, function (newVal) {
+        _this.list.perPage = +newVal <= 0 ? 1 : +newVal;
+        vm['refresh' + _utils2.default.capitalize(_this.listName) + 'Page']();
+      });
+    }
 
     this.list = { currentPage: 0, initial: 0, perPage: perPage };
 
@@ -307,7 +314,7 @@ exports.default = {
     };
 
     vm['refresh' + _utils2.default.capitalize(this.listName) + 'Page'] = function () {
-      vm['change' + _utils2.default.capitalize(_this.listName) + 'Page'](0);
+      vm['change' + _utils2.default.capitalize(_this.listName) + 'Page'](1);
     };
 
     // Turn on warnings back
@@ -344,6 +351,34 @@ exports.default = {
     var links = new _LimitedLinksGenerator2.default(this.vm, this.list, this.listName).generate(limit);
 
     this.vm.$set('limited' + _utils2.default.capitalize(this.listName) + 'Links', links);
+  },
+  getPerPage: function getPerPage() {
+    var vm = this.vm;
+    var arg = this.arg;
+    var regex = new RegExp(arg, 'i');
+
+    if (!this.isPerPageDynamic()) {
+      return +arg;
+    }
+
+    if (isDynamicPerPageValid()) {
+      this.arg = getDynamicArg();
+      return +vm[this.arg];
+    }
+
+    return 1;
+
+    function getDynamicArg() {
+      return Object.keys(vm.$data).find(function (a) {
+        return a.match(regex);
+      });
+    }
+    function isDynamicPerPageValid() {
+      return +vm[getDynamicArg()] > 0;
+    }
+  },
+  isPerPageDynamic: function isPerPageDynamic() {
+    return !Number.isInteger(Number.parseInt(this.arg));
   }
 };
 

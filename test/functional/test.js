@@ -134,6 +134,33 @@ describe('Vue-Paginate', () => {
       vm.$data.limitedLangsLinks.should.eql([1, 2, 3, 4, 5, 6, 7]);
     });
   });
+
+  describe('Dynamic perPage', () => {
+    it('supports dynamic perPage', () => {
+      vm = new Vue({
+        template: '<div v-paginate:perPage="langs">Hello</div>',
+        data: {
+          langs: ['PHP', 'JS', 'Ruby', 'Python'],
+          perPage: 2
+        }
+      }).$mount();
+
+      vm.$data.langs.should.have.length(2);
+    });
+
+    it('guards agains non-positive perPage', () => {
+      vm = new Vue({
+        template: '<div v-paginate:perPage="langs">Hello</div>',
+        data: {
+          langs: ['PHP', 'JS', 'Ruby', 'Python'],
+          perPage: -3
+        }
+      }).$mount();
+
+      vm.$data.langs.should.have.length(1);
+    });
+
+  });
 });
 
 var triggerUpdate = () => vm._directives[0].update(vm.$data.fullLangs);
