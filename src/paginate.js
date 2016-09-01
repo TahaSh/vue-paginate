@@ -72,6 +72,7 @@ export default {
 
       this.list.currentPage = typeof page == 'number' ? page - 1 : page;
 
+      this.setNumberOfPages(this.originalList.length);
       this.setLimitedPages(limit);
     };
 
