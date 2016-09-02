@@ -1,5 +1,5 @@
 /*!
- * vue-paginate v2.1.0
+ * vue-paginate v2.1.1
  * (c) 2016 Taha Shashtari
  * Released under the MIT License.
  */
@@ -205,7 +205,7 @@
     }, {
       key: 'initialOfLastNav',
       value: function initialOfLastNav() {
-        var numberOfNavs = ~ ~(this.list.numberOfPages / this.limit);
+        var numberOfNavs = ~~(this.list.numberOfPages / this.limit);
         var rest = this.list.numberOfPages - this.limit * numberOfNavs;
 
         rest = rest <= 1 ? rest + this.limit : rest;
@@ -291,6 +291,7 @@
 
         _this.list.currentPage = typeof page == 'number' ? page - 1 : page;
 
+        _this.setNumberOfPages(_this.originalList.length);
         _this.setLimitedPages(limit);
       };
 
