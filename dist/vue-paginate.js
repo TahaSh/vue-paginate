@@ -1,5 +1,5 @@
 /*!
- * vue-paginate v2.1.0
+ * vue-paginate v2.1.2
  * (c) 2016 Taha Shashtari
  * Released under the MIT License.
  */
@@ -205,7 +205,7 @@
     }, {
       key: 'initialOfLastNav',
       value: function initialOfLastNav() {
-        var numberOfNavs = ~ ~(this.list.numberOfPages / this.limit);
+        var numberOfNavs = ~~(this.list.numberOfPages / this.limit);
         var rest = this.list.numberOfPages - this.limit * numberOfNavs;
 
         rest = rest <= 1 ? rest + this.limit : rest;
@@ -262,6 +262,7 @@
       // Update the original list when the user changes the full list.
       vm.$watch('full' + utils.capitalize(this.listName), function (newVal, oldVal) {
         _this.originalList = newVal;
+        _this.setNumberOfPages(_this.originalList.length);
         vm['refresh' + utils.capitalize(_this.listName) + 'Page']();
       });
 
