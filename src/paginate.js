@@ -43,7 +43,6 @@ export default {
     // Update the original list when the user changes the full list.
     vm.$watch('full' + utils.capitalize(this.listName), (newVal, oldVal) => {
       this.originalList = newVal;
-      this.setNumberOfPages(this.originalList.length);
       vm['refresh' + utils.capitalize(this.listName) + 'Page']();
     });
 

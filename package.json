@@ -1,6 +1,6 @@
 {
   "name": "vue-paginate",
-  "version": "2.1.2",
+  "version": "2.1.1",
   "description": "A simple vue.js plugin to paginate data",
   "main": "dist/vue-paginate.js",
   "scripts": {
