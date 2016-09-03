@@ -1,5 +1,5 @@
 /*!
- * vue-paginate v2.1.1
+ * vue-paginate v2.1.2
  * (c) 2016 Taha Shashtari
  * Released under the MIT License.
  */
@@ -262,6 +262,7 @@
       // Update the original list when the user changes the full list.
       vm.$watch('full' + utils.capitalize(this.listName), function (newVal, oldVal) {
         _this.originalList = newVal;
+        _this.setNumberOfPages(_this.originalList.length);
         vm['refresh' + utils.capitalize(_this.listName) + 'Page']();
       });
 
@@ -291,7 +292,6 @@
 
         _this.list.currentPage = typeof page == 'number' ? page - 1 : page;
 
-        _this.setNumberOfPages(_this.originalList.length);
         _this.setLimitedPages(limit);
       };
 
