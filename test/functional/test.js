@@ -134,7 +134,7 @@ describe('Vue-Paginate', () => {
       vm.$data.limitedLangsLinks.should.eql([1, 2, 3, 4, 5, 6, 7]);
     });
 
-    it('should update when the list is updated', (done) => {
+    it('updates the links when the list is updated', (done) => {
       vm = new Vue({
         template: '<div v-paginate:1="langs" limit="6">Hello</div>',
         data: {
