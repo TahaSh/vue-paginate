@@ -74,6 +74,7 @@ export default {
       this.list.currentPage = typeof page == 'number' ? page - 1 : page;
 
       this.setLimitedPages(limit);
+      this.update(this.originalList);
     };
 
     // Another way to navigate pages (Next & Prev)
@@ -83,6 +84,8 @@ export default {
       this.list.currentPage = (this.list.currentPage + 1 < this.list.numberOfPages) ?
         this.list.currentPage + 1 :
         this.list.currentPage;
+
+      this.update(this.originalList);
     };
 
     vm['prev' + utils.capitalize(this.listName) + 'Page'] = () => {
@@ -91,6 +94,8 @@ export default {
       this.list.currentPage = (this.list.currentPage - 1 > 0) ?
         this.list.currentPage - 1 :
         0;
+
+      this.update(this.originalList);
     };
 
     vm['refresh' + utils.capitalize(this.listName) + 'Page'] = () => {

@@ -40,47 +40,54 @@ describe('Vue-Paginate', () => {
     vm.$data.langs.should.eql(['PHP', 'JS']);
 
     vm.changeLangsPage(2);
-    triggerUpdate();
 
     vm.$data.currentLangsPage.should.equal(2);
     vm.$data.langs.should.eql(['Ruby', 'Python']);
   });
 
-  it('refreshes the list', () => {
+  it('refreshes the list', (done) => {
     vm.$data.langsLinks.should.have.length(2);
     vm.$data.fullLangs = ['PHP', 'JS', 'Ruby', 'Python', 'Java', 'Erlang'];
 
     vm.refreshLangsPage();
-    triggerUpdate();
 
-    vm.$data.langsLinks.should.have.length(3);
+    Vue.nextTick(() => {
+      vm.$data.langsLinks.should.have.length(3);
+      done();
+    });
   });
 
-  it('supports next/prev navigation', () => {
+  it('supports next/prev navigation', (done) => {
     vm.$data.currentLangsPage.should.equal(1);
     vm.$data.langs.should.eql(['PHP', 'JS']);
 
     vm.nextLangsPage();
-    triggerUpdate();
 
-    vm.$data.currentLangsPage.should.equal(2);
-    vm.$data.langs.should.eql(['Ruby', 'Python']);
+    Vue.nextTick(() => {
+      vm.$data.currentLangsPage.should.equal(2);
+      vm.$data.langs.should.eql(['Ruby', 'Python']);
 
-    vm.prevLangsPage();
-    triggerUpdate();
+      vm.prevLangsPage();
 
-    vm.$data.currentLangsPage.should.equal(1);
-    vm.$data.langs.should.eql(['PHP', 'JS']);
+      Vue.nextTick(() => {
+        vm.$data.currentLangsPage.should.equal(1);
+        vm.$data.langs.should.eql(['PHP', 'JS']);
+
+        done();
+      });
+    });
   });
 
-  it('checks if there is a need to show the navigation links', () => {
+  it('checks if there is a need to show the navigation links', (done) => {
     vm.$data.hasLangsLinks.should.be.true;
 
     vm.$data.fullLangs = ['PHP', 'JS'];
     vm.refreshLangsPage();
-    triggerUpdate();
 
-    vm.$data.hasLangsLinks.should.be.false;
+    Vue.nextTick(() => {
+      vm.$data.hasLangsLinks.should.be.false;
+      done();
+    });
   });
 
   it('can be applied on multiple lists at the same time', () => {
@@ -178,5 +185,3 @@ describe('Vue-Paginate', () => {
 
   });
 });
-
-var triggerUpdate = () => vm._directives[0].update(vm.$data.fullLangs);
