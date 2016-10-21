@@ -49,8 +49,6 @@ describe('Vue-Paginate', () => {
     vm.$data.langsLinks.should.have.length(2);
     vm.$data.fullLangs = ['PHP', 'JS', 'Ruby', 'Python', 'Java', 'Erlang'];
 
-    vm.refreshLangsPage();
-
     Vue.nextTick(() => {
       vm.$data.langsLinks.should.have.length(3);
       done();
@@ -82,7 +80,6 @@ describe('Vue-Paginate', () => {
     vm.$data.hasLangsLinks.should.be.true;
 
     vm.$data.fullLangs = ['PHP', 'JS'];
-    vm.refreshLangsPage();
 
     Vue.nextTick(() => {
       vm.$data.hasLangsLinks.should.be.false;
