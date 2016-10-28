@@ -2,7 +2,9 @@
 
 > This plugin helps you use pagination on lists within seconds!
 
-It's basically a directive with a bunch of methods defined on the vm. When you
+**Please note that this version only works for Vue 1.0. The next version will support Vue 2.0 which is currently under development — thanks for your patience :).**
+
+It's basically a directive with bba bunch of methods defined on the vm. When you
 use this directive on some list, it'll be sliced according to the number of
 items per page, which you specify. Then, you'll work with those slices using the methods & data that automatically gets defined on the vm — not all vms, only the one you used the directive in.
 
