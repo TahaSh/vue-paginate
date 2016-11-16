@@ -1,0 +1,193 @@
+import Vue from 'vue'
+import LimitedLinksGenerator from '../util/LimitedLinksGenerator'
+import { LEFT_ARROW, RIGHT_ARROW, ELLIPSES } from '../config/linkTypes'
+import { warn } from '../util/debug'
+
+export default {
+  name: 'paginate-links',
+  props: {
+    for: {
+      type: String,
+      required: true
+    },
+    limit: {
+      type: Number,
+      default: 0
+    },
+    simple: {
+      type: Object,
+      default: null,
+      validator (obj) {
+        return obj.next && obj.prev
+      }
+    }
+  },
+  data () {
+    return {
+      listOfPages: []
+    }
+  },
+  computed: {
+    currentPage: {
+      get () {
+        if (this.$parent.paginate[this.for]) {
+          return this.$parent.paginate[this.for].page
+        }
+      },
+      set (page) {
+        this.$parent.paginate[this.for].page = page
+      }
+    }
+  },
+  mounted () {
+    if (this.simple && this.limit) {
+      warn(`<paginate-links for="${this.for}"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored.`, this.$parent, 'warn')
+    }
+    if (this.simple && !this.simple.next) {
+      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'next' value.`, this.$parent)
+    }
+    if (this.simple && !this.simple.prev) {
+      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'prev' value.`, this.$parent)
+    }
+    Vue.nextTick(() => {
+      this.updateListOfPages()
+    })
+  },
+  watch: {
+    '$parent.paginate': {
+      handler () {
+        this.updateListOfPages()
+      },
+      deep: true
+    }
+  },
+  methods: {
+    updateListOfPages () {
+      const target = getTargetPaginateComponent(this.$parent.$children, this.for)
+      if (!target) {
+        warn(`<paginate-links for="${this.for}"> can't be used without its companion <paginate name="${this.for}">`, this.$parent)
+        return
+      }
+      const numberOfPages = Math.ceil(target.list.length / target.per)
+      this.listOfPages = getListOfPageNumbers(numberOfPages)
+    }
+  },
+  render (h) {
+    let links = this.simple
+      ? getSimpleLinks(this, h)
+      : this.limit > 0
+      ? getLimitedLinks(this, h)
+      : getFullLinks(this, h)
+
+    return h('ul', {
+      class: ['paginate-links', this.for]
+    }, links)
+  }
+}
+
+function getFullLinks (vm, h) {
+  return vm.listOfPages.map(number => {
+    const data = {
+      on: {
+        click: (e) => {
+          e.preventDefault()
+          vm.currentPage = number
+        }
+      }
+    }
+    const liClass = vm.currentPage === number ? 'active' : ''
+    return h('li', { class: liClass }, [h('a', data, number + 1)])
+  })
+}
+
+function getLimitedLinks (vm, h) {
+  const limitedLinks = new LimitedLinksGenerator(
+    vm.listOfPages,
+    vm.currentPage,
+    vm.limit
+  ).generate()
+  return limitedLinks.map(link => {
+    const data = {
+      on: {
+        click: (e) => {
+          e.preventDefault()
+          vm.currentPage = getTargetPageForLink(link, vm.limit, vm.currentPage)
+        }
+      }
+    }
+    const liClasses = getClassesForLink(link, vm.currentPage)
+    // If the link is a number,
+    // then incremented by 1 (since it's 0 based).
+    // otherwise, do nothing (so, it's a symbol). 
+    const text = Number.isInteger(link) ? link + 1 : link
+    return h('li', { class: liClasses }, [h('a', data, text)])
+  })
+}
+
+function getSimpleLinks (vm, h) {
+  const lastPage = vm.listOfPages.length - 1
+  const prevData = {
+    on: {
+      click: (e) => {
+        e.preventDefault()
+        if (vm.currentPage > 0) vm.currentPage -= 1
+      }
+    }
+  }
+  const nextData = {
+    on: {
+      click: (e) => {
+        e.preventDefault()
+        if (vm.currentPage < lastPage) vm.currentPage += 1
+      }
+    }
+  }
+  const nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
+  const prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
+  const prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
+  const nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+  return [prevLink, nextLink]
+}
+
+function getTargetPaginateComponent (children, targetName) {
+  return children
+    .filter(child => (child.$vnode.componentOptions.tag === 'paginate'))
+    .find(child => child.name === targetName)
+}
+
+function getListOfPageNumbers (numberOfPages) {
+  // converts number of pages into an array
+  // that contains each individual page number
+  // For Example: 4 => [0, 1, 2, 3]
+  return Array.apply(null, { length: numberOfPages })
+    .map((val, index) => index)
+}
+
+function getClassesForLink(link, currentPage) {
+  let liClass = []
+  if (link === LEFT_ARROW) {
+    liClass.push('left-arrow')
+  } else if (link === RIGHT_ARROW) {
+    liClass.push('right-arrow')
+  } else if (link === ELLIPSES) {
+    liClass.push('ellipses')
+  } else {
+    liClass.push('number')
+  }
+
+  if (link === currentPage) {
+    liClass.push('active')
+  }
+  return liClass
+}
+
+function getTargetPageForLink (link, limit, currentPage) {
+  const currentChunk = Math.floor(currentPage / limit)
+  if (link === RIGHT_ARROW || link === ELLIPSES) {
+    return (currentChunk + 1) * limit
+  } else if (link === LEFT_ARROW) {
+    return (currentChunk - 1) * limit
+  }
+  // which is number
+  return link
+}
