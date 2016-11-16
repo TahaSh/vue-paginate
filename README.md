@@ -34,6 +34,8 @@ Include it directly with a `<script>` tag. In this case, you don't need to write
 
 ## Usage
 
+> Before you start, you may want to check a live example on [jsfiddle](https://jsfiddle.net/taha_sh/hmapx482/).
+
 `vue-paginate` consists of two main components: `Paginate` and `PaginateLinks`. And both get registered globally once the plugin is installed.
 
 To paginate any list of data, we have to follow these three small steps:
@@ -176,7 +178,7 @@ There’s nothing special the plugin does to support list filtering. It’s your
 So, if we were to filter the list (or any other operation), we would have something similar to this:
 
 ``` js
-// Assume we have a text box bound to `searchLangs` data via v-model for example.
+// Assume we have a text input bound to `searchLangs` data via v-model for example.
 computed: {
   fLangs () {
     const re = new RegExp(this.searchLangs, 'i')
@@ -197,7 +199,7 @@ But first, let’s see the html structure used for all link types:
 <ul>
   <li><a>1</a></li>
   <li><a>2</a></li>
-  <!— … —>
+  <!-- … -->
 </ul>
 ```
 
@@ -224,6 +226,7 @@ This only works for full & limited links.
 Obviously, this is only for simple links.
 
 Previous –> `ul.paginate-links > li.prev > a`
+
 Next –> `ul.paginate-links > li.next > a`
 
 #### Disabled Next/Previous Links:
@@ -233,8 +236,11 @@ Next –> `ul.paginate-links > li.next > a`
 #### Limited Links:
 
 Number links –> `ul.paginate-links > li.number > a`
+
 Left arrow –> `ul.paginate-links > li.left-arrow > a`
+
 Right arrow –> `ul.paginate-links > li.right-arrow > a`
+
 Ellipses –> `ul.paginate-links > li.ellipses > a`
 
 ## License
