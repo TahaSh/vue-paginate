@@ -59,6 +59,9 @@ export default {
         this.updateListOfPages()
       },
       deep: true
+    },
+    currentPage (toPage, fromPage) {
+      this.$emit('change', toPage + 1, fromPage + 1)
     }
   },
   methods: {

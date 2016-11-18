@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.0.0
+ * vue-paginate v3.1.0
  * (c) 2016 Taha Shashtari
  * @license MIT
  */
@@ -5533,6 +5533,9 @@
           this.updateListOfPages()
         },
         deep: true
+      },
+      currentPage: function currentPage (toPage, fromPage) {
+        this.$emit('change', toPage + 1, fromPage + 1)
       }
     },
     methods: {

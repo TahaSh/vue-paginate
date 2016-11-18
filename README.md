@@ -147,6 +147,25 @@ To activate this mode, you just need to specify the limit using the `limit` prop
 ></paginate-links>
 ```
 
+### Listening to links @change event
+
+When the current page changes, `PaginateLinks` emits an event called `change` to inform you about that. It also passes the switched page numbers with it, if you need them.
+
+``` html
+<paginate-links
+  for="languages"
+  @change="onLangsPageChange"
+></paginate-links>
+```
+
+``` js
+methods: {
+  onLangsPageChange (toPage, fromPage) {
+    // handle here…
+  }
+}
+```
+
 ### Paginate container
 
 The default element `vue-paginate` uses for the `<paginate>` container is `UL`. But, of course, you can change it to whatever you want using the `tag` prop. And the same is true for its class using the `class` prop.
