@@ -213,7 +213,12 @@ function addAdditionalClasses (linksContainer, classes) {
       linksContainer.classList.add(classes['ul'])
     }
     linksContainer.querySelectorAll(selector).forEach(node => {
-      node.classList.add(classes[selector])
+      const selectorValue = classes[selector]
+      if (Array.isArray(selectorValue)) {
+        selectorValue.forEach(c => node.classList.add(c))
+      } else {
+        node.classList.add(selectorValue)
+      }
     })
   })
 }

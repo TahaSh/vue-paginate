@@ -278,7 +278,7 @@ Here's an example:
   :classes="{
     'ul': 'simple-links-container',
     '.next > a': 'next-link',
-    '.prev > a': 'prev-link'
+    '.prev > a': ['prev-link', 'another-class'] // multiple classes
   }"
 ></paginate-links>
 ```
