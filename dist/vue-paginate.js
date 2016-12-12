@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.1.0
+ * vue-paginate v3.2.0
  * (c) 2016 Taha Shashtari
  * @license MIT
  */
@@ -5492,6 +5492,10 @@
         validator: function validator (obj) {
           return obj.next && obj.prev
         }
+      },
+      classes: {
+        type: Object,
+        default: null
       }
     },
     data: function data () {
@@ -5550,15 +5554,25 @@
       }
     },
     render: function render (h) {
+      var this$1 = this;
+
       var links = this.simple
         ? getSimpleLinks(this, h)
         : this.limit > 0
         ? getLimitedLinks(this, h)
         : getFullLinks(this, h)
 
-      return h('ul', {
+      var el = h('ul', {
         class: ['paginate-links', this.for]
       }, links)
+
+      if (this.classes) {
+        vue_common.nextTick(function () {
+          addAdditionalClasses(el.elm, this$1.classes)
+        })
+      }
+
+      return el
     }
   }
 
@@ -5667,6 +5681,18 @@
     }
     // which is number
     return link
+  }
+
+  function addAdditionalClasses (linksContainer, classes) {
+    Object.keys(classes).forEach(function (selector) {
+      if (selector === 'ul') {
+        linksContainer.classList.add(classes['ul'])
+      }
+      linksContainer.querySelectorAll(selector).forEach(function (node) {
+        console.log(node)
+        node.classList.add(classes[selector])
+      })
+    })
   }
 
   function paginateDataGenerator (listNames) {

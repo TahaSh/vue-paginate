@@ -262,6 +262,29 @@ Right arrow –> `ul.paginate-links > li.right-arrow > a`
 
 Ellipses –> `ul.paginate-links > li.ellipses > a`
 
+#### Adding additional classes
+
+In some cases, especially when you're using a CSS framework, you'll need to add additional classes to your links elements. You can do so simply by using the `classes` prop on your `PaginateLinks` component. This prop takes an object that contains the element's selector as the key, and the class you want to add as the value.
+
+Here's an example:
+
+``` html
+<paginate-links
+  for="languages"
+  :simple="{
+    prev: 'Back',
+    next: 'Next'
+  }"
+  :classes="{
+    'ul': 'simple-links-container',
+    '.next > a': 'next-link',
+    '.prev > a': 'prev-link'
+  }"
+></paginate-links>
+```
+
+Note that this feature works on all link types – full links, simple links, and limited links.
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)

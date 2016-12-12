@@ -20,6 +20,10 @@ export default {
       validator (obj) {
         return obj.next && obj.prev
       }
+    },
+    classes: {
+      type: Object,
+      default: null
     }
   },
   data () {
@@ -82,9 +86,17 @@ export default {
       ? getLimitedLinks(this, h)
       : getFullLinks(this, h)
 
-    return h('ul', {
+    const el = h('ul', {
       class: ['paginate-links', this.for]
     }, links)
+
+    if (this.classes) {
+      Vue.nextTick(() => {
+        addAdditionalClasses(el.elm, this.classes)
+      })
+    }
+
+    return el
   }
 }
 
@@ -193,4 +205,16 @@ function getTargetPageForLink (link, limit, currentPage) {
   }
   // which is number
   return link
+}
+
+function addAdditionalClasses (linksContainer, classes) {
+  Object.keys(classes).forEach(selector => {
+    if (selector === 'ul') {
+      linksContainer.classList.add(classes['ul'])
+    }
+    linksContainer.querySelectorAll(selector).forEach(node => {
+      console.log(node)
+      node.classList.add(classes[selector])
+    })
+  })
 }
