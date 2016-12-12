@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.2.0
+ * vue-paginate v3.2.1
  * (c) 2016 Taha Shashtari
  * @license MIT
  */
@@ -5689,7 +5689,6 @@
         linksContainer.classList.add(classes['ul'])
       }
       linksContainer.querySelectorAll(selector).forEach(function (node) {
-        console.log(node)
         node.classList.add(classes[selector])
       })
     })
