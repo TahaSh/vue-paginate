@@ -24,6 +24,8 @@ export default class LimitedLinksGenerator {
       )
     // Add left arrow if needed
     if (this.currentPage >= this.limit) {
+      firstHalf.unshift(ELLIPSES)
+      firstHalf.unshift(0)
       firstHalf.unshift(LEFT_ARROW)
     }
     // Add ellipses if needed

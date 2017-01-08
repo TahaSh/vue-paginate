@@ -82,7 +82,7 @@ export default {
   render (h) {
     let links = this.simple
       ? getSimpleLinks(this, h)
-      : this.limit > 0
+      : this.limit > 1
       ? getLimitedLinks(this, h)
       : getFullLinks(this, h)
 
@@ -121,12 +121,21 @@ function getLimitedLinks (vm, h) {
     vm.currentPage,
     vm.limit
   ).generate()
-  return limitedLinks.map(link => {
+
+  const limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
+
+  return limitedLinks.map((link, index) => {
     const data = {
       on: {
         click: (e) => {
           e.preventDefault()
-          vm.currentPage = getTargetPageForLink(link, vm.limit, vm.currentPage)
+          vm.currentPage = getTargetPageForLink(
+            link,
+            vm.limit,
+            vm.currentPage,
+            limitedLinksMetadata[index],
+            vm.listOfPages
+          )
         }
       }
     }
@@ -196,15 +205,35 @@ function getClassesForLink(link, currentPage) {
   return liClass
 }
 
-function getTargetPageForLink (link, limit, currentPage) {
-  const currentChunk = Math.floor(currentPage / limit)
-  if (link === RIGHT_ARROW || link === ELLIPSES) {
+function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages) {
+  let currentChunk = Math.floor(currentPage / limit)
+  if (link === RIGHT_ARROW || metaData === 'right-ellipses') {
     return (currentChunk + 1) * limit
-  } else if (link === LEFT_ARROW) {
-    return (currentChunk - 1) * limit
+  } else if (link === LEFT_ARROW || metaData === 'left-ellipses') {
+    const chunkContent = listOfPages.slice(currentChunk * limit, currentChunk * limit + limit)
+    const isLastPage = currentPage === listOfPages.length - 1
+    if (isLastPage && chunkContent.length === 1) {
+      currentChunk--
+    }
+    return (currentChunk - 1) * limit + limit - 1
   }
   // which is number
   return link
+}
+
+/**
+ * Mainly used here to check whether the displayed
+ * ellipses is for showing previous or next links
+ */
+function getLimitedLinksMetadata (limitedLinks) {
+  return limitedLinks.map((link, index) => {
+    if (link === ELLIPSES && limitedLinks[index - 1] === 0) {
+      return 'left-ellipses'
+    } else if (link === ELLIPSES && limitedLinks[index - 1] !== 0) {
+      return 'right-ellipses'
+    }
+    return link
+  })
 }
 
 function addAdditionalClasses (linksContainer, classes) {
