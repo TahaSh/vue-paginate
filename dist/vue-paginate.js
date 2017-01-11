@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.3.0
+ * vue-paginate v3.3.1
  * (c) 2017 Taha Shashtari
  * @license MIT
  */
