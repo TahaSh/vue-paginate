@@ -239,7 +239,12 @@ function getLimitedLinksMetadata (limitedLinks) {
 function addAdditionalClasses (linksContainer, classes) {
   Object.keys(classes).forEach(selector => {
     if (selector === 'ul') {
-      linksContainer.classList.add(classes['ul'])
+      const selectorValue = classes['ul']
+      if (Array.isArray(selectorValue)) {
+        selectorValue.forEach(c => linksContainer.classList.add(c))
+      } else {
+        linksContainer.classList.add(selectorValue)
+      }
     }
     linksContainer.querySelectorAll(selector).forEach(node => {
       const selectorValue = classes[selector]

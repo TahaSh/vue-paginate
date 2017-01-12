@@ -6124,7 +6124,12 @@
 	function addAdditionalClasses (linksContainer, classes) {
 	  Object.keys(classes).forEach(function (selector) {
 	    if (selector === 'ul') {
-	      linksContainer.classList.add(classes['ul'])
+	      var selectorValue = classes['ul']
+	      if (Array.isArray(selectorValue)) {
+	        selectorValue.forEach(function (c) { return linksContainer.classList.add(c); })
+	      } else {
+	        linksContainer.classList.add(selectorValue)
+	      }
 	    }
 	    linksContainer.querySelectorAll(selector).forEach(function (node) {
 	      var selectorValue = classes[selector]
