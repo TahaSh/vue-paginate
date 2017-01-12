@@ -118,6 +118,7 @@ describe('PaginateLinks.vue', () => {
     it('shows correct links with classes', (done) => {
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          '<li class="left-arrow disabled"><a>«</a></li>',
           '<li class="number active"><a>1</a></li>',
           '<li class="number"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
@@ -133,6 +134,7 @@ describe('PaginateLinks.vue', () => {
       vm.paginate.langs.page++
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          '<li class="left-arrow"><a>«</a></li>',
           '<li class="number"><a>1</a></li>',
           '<li class="number active"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
@@ -169,6 +171,7 @@ describe('PaginateLinks.vue', () => {
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>7</a></li>',
           '<li class="number active"><a>8</a></li>',
+          '<li class="right-arrow disabled"><a>»</a></li>'
         ].join(''))
         done()
       })

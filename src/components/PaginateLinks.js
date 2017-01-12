@@ -139,7 +139,11 @@ function getLimitedLinks (vm, h) {
         }
       }
     }
-    const liClasses = getClassesForLink(link, vm.currentPage)
+    const liClasses = getClassesForLink(
+      link,
+      vm.currentPage,
+      vm.listOfPages.length - 1
+    )
     // If the link is a number,
     // then incremented by 1 (since it's 0 based).
     // otherwise, do nothing (so, it's a symbol). 
@@ -187,7 +191,7 @@ function getListOfPageNumbers (numberOfPages) {
     .map((val, index) => index)
 }
 
-function getClassesForLink(link, currentPage) {
+function getClassesForLink(link, currentPage, lastPage) {
   let liClass = []
   if (link === LEFT_ARROW) {
     liClass.push('left-arrow')
@@ -202,14 +206,26 @@ function getClassesForLink(link, currentPage) {
   if (link === currentPage) {
     liClass.push('active')
   }
+
+  if (link === LEFT_ARROW && currentPage <= 0) {
+    liClass.push('disabled')
+  } else if (link === RIGHT_ARROW && currentPage >= lastPage) {
+    liClass.push('disabled')
+  }
   return liClass
 }
 
 function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages) {
   let currentChunk = Math.floor(currentPage / limit)
-  if (link === RIGHT_ARROW || metaData === 'right-ellipses') {
+  if (link === LEFT_ARROW) {
+    return (currentPage - 1) < 0 ? 0 : currentPage - 1
+  } else if (link === RIGHT_ARROW) {
+    return (currentPage + 1 > listOfPages.length - 1)
+      ? listOfPages.length - 1
+      : currentPage + 1
+  } else if (metaData === 'right-ellipses') {
     return (currentChunk + 1) * limit
-  } else if (link === LEFT_ARROW || metaData === 'left-ellipses') {
+  } else if (metaData === 'left-ellipses') {
     const chunkContent = listOfPages.slice(currentChunk * limit, currentChunk * limit + limit)
     const isLastPage = currentPage === listOfPages.length - 1
     if (isLastPage && chunkContent.length === 1) {

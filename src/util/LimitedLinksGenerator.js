@@ -26,8 +26,8 @@ export default class LimitedLinksGenerator {
     if (this.currentPage >= this.limit) {
       firstHalf.unshift(ELLIPSES)
       firstHalf.unshift(0)
-      firstHalf.unshift(LEFT_ARROW)
     }
+    firstHalf.unshift(LEFT_ARROW)
     // Add ellipses if needed
     if (this.lastPage - this.limit > this._currentChunkIndex()) {
       firstHalf.push(ELLIPSES)
@@ -37,10 +37,7 @@ export default class LimitedLinksGenerator {
 
   _buildSecondHalf () {
     const secondHalf = [this.lastPage]
-    // Add right arrow if needed
-    if (this._currentChunkIndex() + this.limit < this.lastPage) {
-      secondHalf.push(RIGHT_ARROW)
-    }
+    secondHalf.push(RIGHT_ARROW)
     return secondHalf
   }
 
