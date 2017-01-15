@@ -7,7 +7,13 @@
       </li>
     </paginate>
     <paginate-links for="items"></paginate-links>
-    <paginate-links for="items" :limit="2"></paginate-links>
+    <paginate-links for="items"
+      :limit="2"
+      :step-links="{
+        next: 'N',
+        prev: 'P'
+      }"
+    ></paginate-links>
     <paginate-links for="items" :simple="{
       next: 'Next »',
       prev: '« Back'

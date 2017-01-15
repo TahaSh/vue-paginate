@@ -18,7 +18,19 @@ export default {
       type: Object,
       default: null,
       validator (obj) {
-        return obj.next && obj.prev
+        return obj.prev && obj.next
+      }
+    },
+    stepLinks: {
+      type: Object,
+      default: () => {
+        return {
+          prev: LEFT_ARROW,
+          next: RIGHT_ARROW
+        }
+      },
+      validator (obj) {
+        return obj.prev && obj.next
       }
     },
     classes: {
@@ -52,6 +64,12 @@ export default {
     }
     if (this.simple && !this.simple.prev) {
       warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'prev' value.`, this.$parent)
+    }
+    if (this.stepLinks && !this.stepLinks.next) {
+      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'next' value.`, this.$parent)
+    }
+    if (this.stepLinks && !this.stepLinks.prev) {
+      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'prev' value.`, this.$parent)
     }
     Vue.nextTick(() => {
       this.updateListOfPages()
@@ -119,7 +137,8 @@ function getLimitedLinks (vm, h) {
   const limitedLinks = new LimitedLinksGenerator(
     vm.listOfPages,
     vm.currentPage,
-    vm.limit
+    vm.limit,
+    vm.stepLinks
   ).generate()
 
   const limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
@@ -134,7 +153,8 @@ function getLimitedLinks (vm, h) {
             vm.limit,
             vm.currentPage,
             limitedLinksMetadata[index],
-            vm.listOfPages
+            vm.listOfPages,
+            vm.stepLinks
           )
         }
       }
@@ -142,7 +162,8 @@ function getLimitedLinks (vm, h) {
     const liClasses = getClassesForLink(
       link,
       vm.currentPage,
-      vm.listOfPages.length - 1
+      vm.listOfPages.length - 1,
+      vm.stepLinks
     )
     // If the link is a number,
     // then incremented by 1 (since it's 0 based).
@@ -191,11 +212,11 @@ function getListOfPageNumbers (numberOfPages) {
     .map((val, index) => index)
 }
 
-function getClassesForLink(link, currentPage, lastPage) {
+function getClassesForLink(link, currentPage, lastPage, { prev, next }) {
   let liClass = []
-  if (link === LEFT_ARROW) {
+  if (link === prev) {
     liClass.push('left-arrow')
-  } else if (link === RIGHT_ARROW) {
+  } else if (link === next) {
     liClass.push('right-arrow')
   } else if (link === ELLIPSES) {
     liClass.push('ellipses')
@@ -207,19 +228,19 @@ function getClassesForLink(link, currentPage, lastPage) {
     liClass.push('active')
   }
 
-  if (link === LEFT_ARROW && currentPage <= 0) {
+  if (link === prev && currentPage <= 0) {
     liClass.push('disabled')
-  } else if (link === RIGHT_ARROW && currentPage >= lastPage) {
+  } else if (link === next && currentPage >= lastPage) {
     liClass.push('disabled')
   }
   return liClass
 }
 
-function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages) {
+function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages, { prev, next }) {
   let currentChunk = Math.floor(currentPage / limit)
-  if (link === LEFT_ARROW) {
+  if (link === prev) {
     return (currentPage - 1) < 0 ? 0 : currentPage - 1
-  } else if (link === RIGHT_ARROW) {
+  } else if (link === next) {
     return (currentPage + 1 > listOfPages.length - 1)
       ? listOfPages.length - 1
       : currentPage + 1

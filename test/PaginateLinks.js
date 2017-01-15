@@ -127,7 +127,6 @@ describe('PaginateLinks.vue', () => {
         ].join(''))
         done()
       })
-
     })
 
     it('keeps displayed links the same if the targeted page is within current limited scope', (done) => {
@@ -172,6 +171,39 @@ describe('PaginateLinks.vue', () => {
           '<li class="number"><a>7</a></li>',
           '<li class="number active"><a>8</a></li>',
           '<li class="right-arrow disabled"><a>»</a></li>'
+        ].join(''))
+        done()
+      })
+    })
+
+    it('customizes the step links', (done) => {
+      vm = new Vue({
+        template:
+          `<div>
+            <paginate name="langs" :list="langs" :per="1"></paginate>
+            <paginate-links for="langs"
+              :limit="2"
+              :step-links="{
+                next: 'N',
+                prev: 'P'
+              }"
+            ></paginate-links>
+          </div>`,
+        data: {
+          langs: LANGS,
+          paginate: {langs: { list: [], page: 0 }}
+        },
+        components: { Paginate, PaginateLinks }
+      }).$mount()
+
+      Vue.nextTick(() => {
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          '<li class="left-arrow disabled"><a>P</a></li>',
+          '<li class="number active"><a>1</a></li>',
+          '<li class="number"><a>2</a></li>',
+          '<li class="ellipses"><a>…</a></li>',
+          '<li class="number"><a>8</a></li>',
+          '<li class="right-arrow"><a>N</a></li>'
         ].join(''))
         done()
       })
