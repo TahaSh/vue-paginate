@@ -33,6 +33,9 @@ export default {
         return obj.prev && obj.next
       }
     },
+    showStepLinks: {
+      type: Boolean
+    },
     classes: {
       type: Object,
       default: null
@@ -119,17 +122,34 @@ export default {
 }
 
 function getFullLinks (vm, h) {
-  return vm.listOfPages.map(number => {
+  const allLinks = vm.showStepLinks
+    ? [vm.stepLinks.prev, ...vm.listOfPages, vm.stepLinks.next]
+    : vm.listOfPages
+  return allLinks.map(link => {
     const data = {
       on: {
         click: (e) => {
           e.preventDefault()
-          vm.currentPage = number
+          vm.currentPage = getTargetPageForLink(
+            link,
+            vm.limit,
+            vm.currentPage,
+            vm.listOfPages,
+            vm.stepLinks
+          )
         }
       }
     }
-    const liClass = vm.currentPage === number ? 'active' : ''
-    return h('li', { class: liClass }, [h('a', data, number + 1)])
+    const liClasses = getClassesForLink(
+      link,
+      vm.currentPage,
+      vm.listOfPages.length - 1,
+      vm.stepLinks
+    )
+    const linkText = link === vm.stepLinks.next || link === vm.stepLinks.prev
+      ? link
+      : link + 1 // it means it's a number
+    return h('li', { class: liClasses }, [h('a', data, linkText)])
   })
 }
 
@@ -152,9 +172,9 @@ function getLimitedLinks (vm, h) {
             link,
             vm.limit,
             vm.currentPage,
-            limitedLinksMetadata[index],
             vm.listOfPages,
-            vm.stepLinks
+            vm.stepLinks,
+            limitedLinksMetadata[index]
           )
         }
       }
@@ -236,7 +256,7 @@ function getClassesForLink(link, currentPage, lastPage, { prev, next }) {
   return liClass
 }
 
-function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages, { prev, next }) {
+function getTargetPageForLink (link, limit, currentPage, listOfPages, { prev, next }, metaData = null) {
   let currentChunk = Math.floor(currentPage / limit)
   if (link === prev) {
     return (currentPage - 1) < 0 ? 0 : currentPage - 1
@@ -244,9 +264,9 @@ function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages, 
     return (currentPage + 1 > listOfPages.length - 1)
       ? listOfPages.length - 1
       : currentPage + 1
-  } else if (metaData === 'right-ellipses') {
+  } else if (metaData && metaData === 'right-ellipses') {
     return (currentChunk + 1) * limit
-  } else if (metaData === 'left-ellipses') {
+  } else if (metaData && metaData === 'left-ellipses') {
     const chunkContent = listOfPages.slice(currentChunk * limit, currentChunk * limit + limit)
     const isLastPage = currentPage === listOfPages.length - 1
     if (isLastPage && chunkContent.length === 1) {

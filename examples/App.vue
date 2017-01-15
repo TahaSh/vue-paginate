@@ -6,7 +6,9 @@
         {{ item }}
       </li>
     </paginate>
-    <paginate-links for="items"></paginate-links>
+    <paginate-links for="items"
+      :show-step-links="true"
+    ></paginate-links>
     <paginate-links for="items"
       :limit="2"
       :step-links="{
