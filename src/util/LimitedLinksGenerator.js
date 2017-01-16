@@ -1,15 +1,13 @@
 import { LEFT_ARROW, RIGHT_ARROW, ELLIPSES } from '../config/linkTypes'
 
 export default class LimitedLinksGenerator {
-  constructor (listOfPages, currentPage, limit, stepLinks = { prev: LEFT_ARROW, next: RIGHT_ARROW }) {
+  constructor (listOfPages, currentPage, limit) {
     this.listOfPages = listOfPages
     this.lastPage = listOfPages.length - 1
     this.currentPage = currentPage === this.lastPage
       ? this.lastPage - 1
       : currentPage
     this.limit = limit
-    this.prevLink = stepLinks.prev
-    this.nextLink = stepLinks.next
   }
 
   generate () {
@@ -29,7 +27,6 @@ export default class LimitedLinksGenerator {
       firstHalf.unshift(ELLIPSES)
       firstHalf.unshift(0)
     }
-    firstHalf.unshift(this.prevLink)
     // Add ellipses if needed
     if (this.lastPage - this.limit > this._currentChunkIndex()) {
       firstHalf.push(ELLIPSES)
@@ -39,7 +36,6 @@ export default class LimitedLinksGenerator {
 
   _buildSecondHalf () {
     const secondHalf = [this.lastPage]
-    secondHalf.push(this.nextLink)
     return secondHalf
   }
 

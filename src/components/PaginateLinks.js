@@ -161,12 +161,16 @@ function getFullLinks (vm, h) {
 }
 
 function getLimitedLinks (vm, h) {
-  const limitedLinks = new LimitedLinksGenerator(
+  let limitedLinks = new LimitedLinksGenerator(
     vm.listOfPages,
     vm.currentPage,
     vm.limit,
     vm.stepLinks
   ).generate()
+
+  limitedLinks = vm.showStepLinks
+    ? [vm.stepLinks.prev, ...limitedLinks, vm.stepLinks.next]
+    : limitedLinks
 
   const limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
 

@@ -159,12 +159,10 @@ describe('PaginateLinks.vue', () => {
     it('shows correct links with classes', (done) => {
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
-          '<li class="left-arrow disabled"><a>«</a></li>',
           '<li class="number active"><a>1</a></li>',
           '<li class="number"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>8</a></li>',
-          '<li class="right-arrow"><a>»</a></li>'
         ].join(''))
         done()
       })
@@ -174,12 +172,10 @@ describe('PaginateLinks.vue', () => {
       vm.paginate.langs.page++
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
-          '<li class="left-arrow"><a>«</a></li>',
           '<li class="number"><a>1</a></li>',
           '<li class="number active"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
-          '<li class="number"><a>8</a></li>',
-          '<li class="right-arrow"><a>»</a></li>'
+          '<li class="number"><a>8</a></li>'
         ].join(''))
         done()
       })
@@ -189,14 +185,12 @@ describe('PaginateLinks.vue', () => {
       vm.paginate.langs.page = 3
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
-          '<li class="left-arrow"><a>«</a></li>',
           '<li class="number"><a>1</a></li>',
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>3</a></li>',
           '<li class="number active"><a>4</a></li>',
           '<li class="ellipses"><a>…</a></li>',
-          '<li class="number"><a>8</a></li>',
-          '<li class="right-arrow"><a>»</a></li>'
+          '<li class="number"><a>8</a></li>'
         ].join(''))
         done()
       })
@@ -206,50 +200,113 @@ describe('PaginateLinks.vue', () => {
       vm.paginate.langs.page = 7
       Vue.nextTick(() => {
         expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
-          '<li class="left-arrow"><a>«</a></li>',
           '<li class="number"><a>1</a></li>',
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>7</a></li>',
-          '<li class="number active"><a>8</a></li>',
-          '<li class="right-arrow disabled"><a>»</a></li>'
+          '<li class="number active"><a>8</a></li>'
         ].join(''))
         done()
       })
     })
 
-    it('customizes the step links', (done) => {
-      vm = new Vue({
-        template:
-          `<div>
-            <paginate name="langs" :list="langs" :per="1"></paginate>
-            <paginate-links for="langs"
-              :limit="2"
-              :step-links="{
-                next: 'N',
-                prev: 'P'
-              }"
-            ></paginate-links>
-          </div>`,
-        data: {
-          langs: LANGS,
-          paginate: {langs: { list: [], page: 0 }}
-        },
-        components: { Paginate, PaginateLinks }
-      }).$mount()
-
-      Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
-          '<li class="left-arrow disabled"><a>P</a></li>',
-          '<li class="number active"><a>1</a></li>',
-          '<li class="number"><a>2</a></li>',
-          '<li class="ellipses"><a>…</a></li>',
-          '<li class="number"><a>8</a></li>',
-          '<li class="right-arrow"><a>N</a></li>'
-        ].join(''))
-        done()
+    describe('step links for limited links', (done) => {
+      beforeEach(() => {
+        vm = new Vue({
+          template:
+            `<div>
+              <paginate name="langs" :list="langs" :per="1"></paginate>
+              <paginate-links for="langs"
+                :show-step-links="true"
+                :limit="2"
+              ></paginate-links>
+            </div>`,
+          data: {
+            langs: LANGS,
+            paginate: {langs: { list: [], page: 0 }}
+          },
+          components: { Paginate, PaginateLinks }
+        }).$mount()
       })
-    })
 
+      it('can show step links for limited links', (done) => {
+        Vue.nextTick(() => {
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+            '<li class="left-arrow disabled"><a>«</a></li>',
+            '<li class="number active"><a>1</a></li>',
+            '<li class="number"><a>2</a></li>',
+            '<li class="ellipses"><a>…</a></li>',
+            '<li class="number"><a>8</a></li>',
+            '<li class="right-arrow"><a>»</a></li>'
+          ].join(''))
+          done()
+        })
+      })
+
+      it('removes disabled class from left arrow if not on first page', (done) => {
+        vm.paginate.langs.page++
+        Vue.nextTick(() => {
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+            '<li class="left-arrow"><a>«</a></li>',
+            '<li class="number"><a>1</a></li>',
+            '<li class="number active"><a>2</a></li>',
+            '<li class="ellipses"><a>…</a></li>',
+            '<li class="number"><a>8</a></li>',
+            '<li class="right-arrow"><a>»</a></li>'
+          ].join(''))
+          done()
+        })
+      })
+
+      it('makes right arrow disabled if it is on last page', (done) => {
+        vm.paginate.langs.page = 7
+        Vue.nextTick(() => {
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+            '<li class="left-arrow"><a>«</a></li>',
+            '<li class="number"><a>1</a></li>',
+            '<li class="ellipses"><a>…</a></li>',
+            '<li class="number"><a>7</a></li>',
+            '<li class="number active"><a>8</a></li>',
+            '<li class="right-arrow disabled"><a>»</a></li>'
+          ].join(''))
+          done()
+        })
+      })
+
+      it('customizes the step links', (done) => {
+        vm = new Vue({
+          template:
+            `<div>
+              <paginate name="langs" :list="langs" :per="1"></paginate>
+              <paginate-links for="langs"
+                :limit="2"
+                :show-step-links="true"
+                :step-links="{
+                  next: 'N',
+                  prev: 'P'
+                }"
+              ></paginate-links>
+            </div>`,
+          data: {
+            langs: LANGS,
+            paginate: {langs: { list: [], page: 0 }}
+          },
+          components: { Paginate, PaginateLinks }
+        }).$mount()
+
+        Vue.nextTick(() => {
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+            '<li class="left-arrow disabled"><a>P</a></li>',
+            '<li class="number active"><a>1</a></li>',
+            '<li class="number"><a>2</a></li>',
+            '<li class="ellipses"><a>…</a></li>',
+            '<li class="number"><a>8</a></li>',
+            '<li class="right-arrow"><a>N</a></li>'
+          ].join(''))
+          done()
+        })
+      })
+
+    })
   })
 
   describe('all types', () => {
