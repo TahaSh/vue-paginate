@@ -252,4 +252,46 @@ describe('PaginateLinks.vue', () => {
 
   })
 
+  describe('all types', () => {
+    it('can be hidden if it contains a single page', (done) => {
+      vm = new Vue({
+        template:
+          `<div>
+            <paginate name="langs" :list="langs" :per="8"></paginate>
+            <paginate-links for="langs" :hide-single-page="true"></paginate-links>
+          </div>`,
+        data: {
+          langs: LANGS,
+          paginate: {langs: { list: [], page: 0 }}
+        },
+        components: { Paginate, PaginateLinks }
+      }).$mount()
+
+      Vue.nextTick(() => {
+        expect(vm.$el.querySelector('.paginate-links')).to.be.null
+        done()
+      })
+    })
+
+    it('should not be hidden if it contains a single page and hide-single-page=false', (done) => {
+      vm = new Vue({
+        template:
+          `<div>
+            <paginate name="langs" :list="langs" :per="8"></paginate>
+            <paginate-links for="langs" :hide-single-page="false"></paginate-links>
+          </div>`,
+        data: {
+          langs: LANGS,
+          paginate: {langs: { list: [], page: 0 }}
+        },
+        components: { Paginate, PaginateLinks }
+      }).$mount()
+
+      Vue.nextTick(() => {
+        expect(vm.$el.querySelector('.paginate-links')).to.be.not.null
+        done()
+      })
+    })
+  })
+
 })

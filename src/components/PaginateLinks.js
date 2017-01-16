@@ -36,6 +36,9 @@ export default {
     showStepLinks: {
       type: Boolean
     },
+    hideSinglePage: {
+      type: Boolean
+    },
     classes: {
       type: Object,
       default: null
@@ -43,7 +46,8 @@ export default {
   },
   data () {
     return {
-      listOfPages: []
+      listOfPages: [],
+      numberOfPages: 0
     }
   },
   computed: {
@@ -96,8 +100,8 @@ export default {
         warn(`<paginate-links for="${this.for}"> can't be used without its companion <paginate name="${this.for}">`, this.$parent)
         return
       }
-      const numberOfPages = Math.ceil(target.list.length / target.per)
-      this.listOfPages = getListOfPageNumbers(numberOfPages)
+      this.numberOfPages = Math.ceil(target.list.length / target.per)
+      this.listOfPages = getListOfPageNumbers(this.numberOfPages)
     }
   },
   render (h) {
@@ -106,6 +110,10 @@ export default {
       : this.limit > 1
       ? getLimitedLinks(this, h)
       : getFullLinks(this, h)
+
+    if (this.hideSinglePage && this.numberOfPages <= 1) {
+      return null
+    }
 
     const el = h('ul', {
       class: ['paginate-links', this.for]
@@ -116,7 +124,6 @@ export default {
         addAdditionalClasses(el.elm, this.classes)
       })
     }
-
     return el
   }
 }
