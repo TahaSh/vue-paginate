@@ -147,6 +147,31 @@ To activate this mode, you just need to specify the limit using the `limit` prop
 ></paginate-links>
 ```
 
+### Step Links
+
+As in simple links, you can have next/previous links — which I call step links — in full links and limited links. To add them, use `:show-step-links="true"` prop on the `PaginateLinks` component you want. For example:
+
+``` html
+<paginate-links
+  for="languages"
+  :show-step-links="true"
+></paginate-links>
+```
+
+#### Customizing step links
+
+The default symbols for the step links are `«` for previous and `»` for next. But, of course, you can change them to what you want using the `:step-links` prop, like this:
+
+``` html
+<paginate-links for="languages"
+  :show-step-links="true"
+  :step-links="{
+    next: 'N',
+    prev: 'P'
+  }"
+></paginate-links>
+```
+
 ### Listening to links @change event
 
 When the current page changes, `PaginateLinks` emits an event called `change` to inform you about that. It also passes the switched page numbers with it, if you need them.
@@ -207,6 +232,16 @@ computed: {
 ```
 
 Then just pass that `fLangs` to the `list` prop instead of the original `langs`.
+
+### Hide single page
+
+By default, paginated links will always be displayed even if there's only one page. But sometimes you want to hide it when there's a single page — especially after filtering the items. The plugin allows you to do so by using the `:hide-single-page="true"` prop.
+
+``` html
+<paginate-links for="items"
+  :hide-single-page="true"
+></paginate-links>
+```
 
 ### Links customization
 
@@ -289,4 +324,4 @@ Note that this feature works on all link types – full links, simple links, and
 
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2016 Taha Shashtari
+Copyright (c) 2016–2017 Taha Shashtari
