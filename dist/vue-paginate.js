@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.3.1
+ * vue-paginate v3.4.0
  * (c) 2017 Taha Shashtari
  * @license MIT
  */
@@ -5851,11 +5851,10 @@
 	      this._currentChunkIndex(),
 	      this._currentChunkIndex() + this.limit
 	    )
-	  // Add left arrow if needed
+	  // Add backward ellipses with first page if needed
 	  if (this.currentPage >= this.limit) {
 	    firstHalf.unshift(ELLIPSES)
 	    firstHalf.unshift(0)
-	    firstHalf.unshift(LEFT_ARROW)
 	  }
 	  // Add ellipses if needed
 	  if (this.lastPage - this.limit > this._currentChunkIndex()) {
@@ -5866,10 +5865,6 @@
 
 	LimitedLinksGenerator.prototype._buildSecondHalf = function _buildSecondHalf () {
 	  var secondHalf = [this.lastPage]
-	  // Add right arrow if needed
-	  if (this._currentChunkIndex() + this.limit < this.lastPage) {
-	    secondHalf.push(RIGHT_ARROW)
-	  }
 	  return secondHalf
 	};
 
@@ -5899,8 +5894,26 @@
 	      type: Object,
 	      default: null,
 	      validator: function validator (obj) {
-	        return obj.next && obj.prev
+	        return obj.prev && obj.next
 	      }
+	    },
+	    stepLinks: {
+	      type: Object,
+	      default: function () {
+	        return {
+	          prev: LEFT_ARROW,
+	          next: RIGHT_ARROW
+	        }
+	      },
+	      validator: function validator$1 (obj) {
+	        return obj.prev && obj.next
+	      }
+	    },
+	    showStepLinks: {
+	      type: Boolean
+	    },
+	    hideSinglePage: {
+	      type: Boolean
 	    },
 	    classes: {
 	      type: Object,
@@ -5909,7 +5922,8 @@
 	  },
 	  data: function data () {
 	    return {
-	      listOfPages: []
+	      listOfPages: [],
+	      numberOfPages: 0
 	    }
 	  },
 	  computed: {
@@ -5936,6 +5950,12 @@
 	    if (this.simple && !this.simple.prev) {
 	      warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'prev' value."), this.$parent)
 	    }
+	    if (this.stepLinks && !this.stepLinks.next) {
+	      warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'next' value."), this.$parent)
+	    }
+	    if (this.stepLinks && !this.stepLinks.prev) {
+	      warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'prev' value."), this.$parent)
+	    }
 	    vue_runtime_common.nextTick(function () {
 	      this$1.updateListOfPages()
 	    })
@@ -5958,8 +5978,8 @@
 	        warn(("<paginate-links for=\"" + (this.for) + "\"> can't be used without its companion <paginate name=\"" + (this.for) + "\">"), this.$parent)
 	        return
 	      }
-	      var numberOfPages = Math.ceil(target.list.length / target.per)
-	      this.listOfPages = getListOfPageNumbers(numberOfPages)
+	      this.numberOfPages = Math.ceil(target.list.length / target.per)
+	      this.listOfPages = getListOfPageNumbers(this.numberOfPages)
 	    }
 	  },
 	  render: function render (h) {
@@ -5971,6 +5991,10 @@
 	      ? getLimitedLinks(this, h)
 	      : getFullLinks(this, h)
 
+	    if (this.hideSinglePage && this.numberOfPages <= 1) {
+	      return null
+	    }
+
 	    var el = h('ul', {
 	      class: ['paginate-links', this.for]
 	    }, links)
@@ -5980,23 +6004,39 @@
 	        addAdditionalClasses(el.elm, this$1.classes)
 	      })
 	    }
-
 	    return el
 	  }
 	}
 
 	function getFullLinks (vm, h) {
-	  return vm.listOfPages.map(function (number) {
+	  var allLinks = vm.showStepLinks
+	    ? [vm.stepLinks.prev ].concat( vm.listOfPages, [vm.stepLinks.next])
+	    : vm.listOfPages
+	  return allLinks.map(function (link) {
 	    var data = {
 	      on: {
 	        click: function (e) {
 	          e.preventDefault()
-	          vm.currentPage = number
+	          vm.currentPage = getTargetPageForLink(
+	            link,
+	            vm.limit,
+	            vm.currentPage,
+	            vm.listOfPages,
+	            vm.stepLinks
+	          )
 	        }
 	      }
 	    }
-	    var liClass = vm.currentPage === number ? 'active' : ''
-	    return h('li', { class: liClass }, [h('a', data, number + 1)])
+	    var liClasses = getClassesForLink(
+	      link,
+	      vm.currentPage,
+	      vm.listOfPages.length - 1,
+	      vm.stepLinks
+	    )
+	    var linkText = link === vm.stepLinks.next || link === vm.stepLinks.prev
+	      ? link
+	      : link + 1 // it means it's a number
+	    return h('li', { class: liClasses }, [h('a', data, linkText)])
 	  })
 	}
 
@@ -6004,8 +6044,13 @@
 	  var limitedLinks = new LimitedLinksGenerator(
 	    vm.listOfPages,
 	    vm.currentPage,
-	    vm.limit
+	    vm.limit,
+	    vm.stepLinks
 	  ).generate()
+
+	  limitedLinks = vm.showStepLinks
+	    ? [vm.stepLinks.prev ].concat( limitedLinks, [vm.stepLinks.next])
+	    : limitedLinks
 
 	  var limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
 
@@ -6018,13 +6063,19 @@
 	            link,
 	            vm.limit,
 	            vm.currentPage,
-	            limitedLinksMetadata[index],
-	            vm.listOfPages
+	            vm.listOfPages,
+	            vm.stepLinks,
+	            limitedLinksMetadata[index]
 	          )
 	        }
 	      }
 	    }
-	    var liClasses = getClassesForLink(link, vm.currentPage)
+	    var liClasses = getClassesForLink(
+	      link,
+	      vm.currentPage,
+	      vm.listOfPages.length - 1,
+	      vm.stepLinks
+	    )
 	    // If the link is a number,
 	    // then incremented by 1 (since it's 0 based).
 	    // otherwise, do nothing (so, it's a symbol). 
@@ -6072,11 +6123,14 @@
 	    .map(function (val, index) { return index; })
 	}
 
-	function getClassesForLink(link, currentPage) {
+	function getClassesForLink(link, currentPage, lastPage, ref) {
+	  var prev = ref.prev;
+	  var next = ref.next;
+
 	  var liClass = []
-	  if (link === LEFT_ARROW) {
+	  if (link === prev) {
 	    liClass.push('left-arrow')
-	  } else if (link === RIGHT_ARROW) {
+	  } else if (link === next) {
 	    liClass.push('right-arrow')
 	  } else if (link === ELLIPSES) {
 	    liClass.push('ellipses')
@@ -6087,14 +6141,30 @@
 	  if (link === currentPage) {
 	    liClass.push('active')
 	  }
+
+	  if (link === prev && currentPage <= 0) {
+	    liClass.push('disabled')
+	  } else if (link === next && currentPage >= lastPage) {
+	    liClass.push('disabled')
+	  }
 	  return liClass
 	}
 
-	function getTargetPageForLink (link, limit, currentPage, metaData, listOfPages) {
+	function getTargetPageForLink (link, limit, currentPage, listOfPages, ref, metaData) {
+	  var prev = ref.prev;
+	  var next = ref.next;
+	  if ( metaData === void 0 ) metaData = null;
+
 	  var currentChunk = Math.floor(currentPage / limit)
-	  if (link === RIGHT_ARROW || metaData === 'right-ellipses') {
+	  if (link === prev) {
+	    return (currentPage - 1) < 0 ? 0 : currentPage - 1
+	  } else if (link === next) {
+	    return (currentPage + 1 > listOfPages.length - 1)
+	      ? listOfPages.length - 1
+	      : currentPage + 1
+	  } else if (metaData && metaData === 'right-ellipses') {
 	    return (currentChunk + 1) * limit
-	  } else if (link === LEFT_ARROW || metaData === 'left-ellipses') {
+	  } else if (metaData && metaData === 'left-ellipses') {
 	    var chunkContent = listOfPages.slice(currentChunk * limit, currentChunk * limit + limit)
 	    var isLastPage = currentPage === listOfPages.length - 1
 	    if (isLastPage && chunkContent.length === 1) {
