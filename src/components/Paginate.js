@@ -58,10 +58,12 @@ export default {
     list () {
       // On list change, refresh the paginated list
       this.currentPage = 0
+      this.range = []
       this.paginateList()
     },
     per () {
       this.currentPage = 0
+      this.range = []
       this.paginateList()
     }
   },
@@ -70,6 +72,7 @@ export default {
       const index = this.currentPage * this.per
       const paginatedList = this.list.slice(index, index + this.per)
       this.$parent.paginate[this.name].list = paginatedList
+      this.$parent.paginate[this.name].range = [index, Math.min(index + this.per - 1, this.list.length - 1)]
     }
   },
   render (h) {
