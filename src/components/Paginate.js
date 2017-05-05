@@ -22,7 +22,7 @@ export default {
       type: String,
       default: 'ul'
     },
-    class: {
+    classes: {
       type: String
     }
   },
@@ -73,7 +73,7 @@ export default {
     }
   },
   render (h) {
-    const className = this.class ? this.class : ''
-    return h(this.tag, { class: className }, this.$slots.default)
+    const className = this.classes ? this.classes : ''
+    return h(this.tag, { classes: className }, this.$slots.default)
   }
 }
