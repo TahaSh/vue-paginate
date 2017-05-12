@@ -134,4 +134,30 @@ describe('Paginate.vue', () => {
       done()
     })
   })
+
+  it('goes to a specific page programmatically', (done) => {
+    vm = new Vue({
+      template: `
+      <div>
+        <paginate ref="paginate"
+          name="langs"
+          :list="langs"
+          :per="2"
+          class="test-paginate"
+        ></paginate>
+      </div>`,
+      data: {
+        langs: LANGS,
+        paginate: {langs: { list: [], page: 0 }}
+      },
+      components: { Paginate }
+    }).$mount()
+    const paginator = vm.$refs.paginate
+    expect(paginator.currentPage).to.equal(0)
+    paginator.goToPage(3)
+    Vue.nextTick(() => {
+      expect(paginator.currentPage).to.equal(2)
+      done()
+    })
+  })
 })

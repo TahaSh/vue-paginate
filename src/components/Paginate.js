@@ -70,6 +70,14 @@ export default {
       const index = this.currentPage * this.per
       const paginatedList = this.list.slice(index, index + this.per)
       this.$parent.paginate[this.name].list = paginatedList
+    },
+    goToPage (page) {
+      const maxPage = Math.ceil(this.list.length / this.per)
+      if (page > maxPage) {
+        warn(`You cannot go to page ${page}. The last page is ${maxPage}.`, this.$parent)
+        return
+      }
+      this.currentPage = page - 1
     }
   },
   render (h) {
