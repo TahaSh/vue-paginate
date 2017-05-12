@@ -21,9 +21,6 @@ export default {
     tag: {
       type: String,
       default: 'ul'
-    },
-    class: {
-      type: String
     }
   },
   data () {
@@ -81,7 +78,6 @@ export default {
     }
   },
   render (h) {
-    const className = this.class ? this.class : ''
-    return h(this.tag, { class: className }, this.$slots.default)
+    return h(this.tag, {}, this.$slots.default)
   }
 }
