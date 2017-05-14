@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Vue-Paginate v3.0</h1>
-    <paginate name="items" :list="items" class="paginate-list">
+    <paginate name="items" :list="items" ref="paginator" class="paginate-list">
       <li v-for="item in paginated('items')">
         {{ item }}
       </li>
@@ -21,6 +21,9 @@
       next: 'Next »',
       prev: '« Back'
     }"></paginate-links>
+    <span v-if="$refs.paginator">
+      Viewing {{$refs.paginator.pageItemsCount}} results
+    </span>
   </div>
 </template>
 

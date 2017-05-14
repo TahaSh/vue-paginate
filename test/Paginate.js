@@ -160,4 +160,32 @@ describe('Paginate.vue', () => {
       done()
     })
   })
+
+  it('has page items count descripiton', (done) => {
+    vm = new Vue({
+      template: `
+      <div>
+        <paginate ref="paginate"
+          name="langs"
+          :list="langs"
+          :per="2"
+          class="test-paginate"
+        ></paginate>
+      </div>`,
+      data: {
+        langs: LANGS,
+        paginate: {langs: { list: [], page: 0 }}
+      },
+      components: { Paginate }
+    }).$mount()
+    const paginator = vm.$refs.paginate
+    Vue.nextTick(() => {
+      expect(paginator.pageItemsCount).to.equal('1-2 of 8')
+      vm.paginate.langs.page = 1
+      Vue.nextTick(() => {
+        expect(paginator.pageItemsCount).to.equal('3-4 of 8')
+        done()
+      })
+    })
+  })
 })

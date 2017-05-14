@@ -5045,9 +5045,9 @@ vue-style-loader@^1.0.0:
   dependencies:
     loader-utils "^0.2.7"
 
-vue-template-compiler@^2.1.8:
-  version "2.1.8"
-  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.1.8.tgz#12dd1cc63793f59be580c694a61610cb9369d629"
+vue-template-compiler@2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.3.3.tgz#b5bab9ec57309c906b82a78c81a02179dbc2f470"
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"

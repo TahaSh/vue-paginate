@@ -36,6 +36,12 @@ export default {
       set (page) {
         this.$parent.paginate[this.name].page = page
       }
+    },
+    pageItemsCount () {
+      const numOfItems = this.list.length
+      const first = this.currentPage * this.per + 1
+      const last = Math.min((this.currentPage * this.per) + this.per, numOfItems)
+      return `${first}-${last} of ${numOfItems}`
     }
   },
   mounted () {
