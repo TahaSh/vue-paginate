@@ -42,12 +42,17 @@ export default {
     classes: {
       type: Object,
       default: null
+    },
+    async: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       listOfPages: [],
-      numberOfPages: 0
+      numberOfPages: 0,
+      target: null
     }
   },
   computed: {
@@ -95,16 +100,20 @@ export default {
   },
   methods: {
     updateListOfPages () {
-      const target = getTargetPaginateComponent(this.$parent.$children, this.for)
-      if (!target) {
+      this.target = getTargetPaginateComponent(this.$parent.$children, this.for)
+      if (!this.target) {
+        if (this.async) return
         warn(`<paginate-links for="${this.for}"> can't be used without its companion <paginate name="${this.for}">`, this.$parent)
+        warn(`To fix that issue you may need to use :async="true" on <paginate-links> component to allow for asyncronous rendering`, this.$parent, 'warn')
         return
       }
-      this.numberOfPages = Math.ceil(target.list.length / target.per)
+      this.numberOfPages = Math.ceil(this.target.list.length / this.target.per)
       this.listOfPages = getListOfPageNumbers(this.numberOfPages)
     }
   },
   render (h) {
+    if (!this.target && this.async) return null
+
     let links = this.simple
       ? getSimpleLinks(this, h)
       : this.limit > 1
