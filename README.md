@@ -109,6 +109,55 @@ All that component needs to know is the name of the registered paginated list. W
 
 So, that was the third step!
 
+### Rendering PaginateLinks asynchronously
+
+A common error users get when using this plugin is this:
+
+> [vue-paginate]: <paginate-links for="items"> can't be used without its companion <paginate name="items">
+
+This error occurs for two reasons:
+1. You haven't added your `<paginate>` yet! — Just add it and it will be fixed.
+2. Or your defined `<paginate>` component is rendered after its companion `<paginate-links>` has been rendered (usually happens when using `v-if` on `<paginate>` or on one of its parents)
+
+Here's some contrived example of the second case:
+
+``` html
+<paginate v-if="shown"
+  name="items"
+  :list="items"
+>
+  <li v-for="item in paginated('items')">
+    {{ item }}
+  </li>
+</paginate>
+<paginate-links for="items"></paginate-links>
+```
+
+``` js
+new Vue({
+  el: '#app',
+  data: {
+    langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang'],
+    paginate: ['languages'],
+    shown: false
+  },
+  mounted () {
+    setTimeout(() => {
+      this.shown = true
+    }, 1000)
+  }
+})
+```
+
+If you try this example in the browser, you'll see the error described in this section. And the reason for that is because our `PaginateLinks` component can't find its companion `Paginate` component to show the links for — since it takes a complete second to render itself.
+
+To fix this issue we have to tell our `PaginateLinks` to wait for its companion `Paginate` component to be rendered first. And we can do that simply by using `:async="true"` on `<paginate-links>`.
+
+``` html
+<paginate-links for="items" :async="true"></paginate-links>
+```
+*So the bottom line is this: `<paginate>` component should always be rendered before `<paginate-links>` component.*
+
 ### Types of paginate links
 
 `vue-paginate` provides us with three different types of pagination links:
@@ -190,6 +239,64 @@ methods: {
   }
 }
 ```
+
+### Navigate pages programmatically
+
+`Paginate` component exposes a method that allows you to go to a specific page manually (not through `PaginateLinks` component). That method is called `goToPage(pageNumber)`.
+
+To access this method, you need to get an access to your `<paginate>` component instance using `ref` property.
+
+Here's an example:
+
+``` html
+<paginate ref="paginator"
+  name="items"
+  :list="items"
+>
+  <li v-for="item in paginated('items')">
+    {{ item }}
+  </li>
+</paginate>
+<button @click="goToSecondPage">Go to second page</button>
+```
+
+``` js
+methods: {
+  goToSecondPage () {
+    if (this.$refs.paginator) {
+      this.$refs.paginator.goToPage(2)
+    }
+  }
+}
+```
+
+### Displaying page items count (`X-Y of Z`)
+
+A common need for paginated lists is to display the items count description of the currently viewed items. It's usually displayed in this format `X-Y of Z` (e.g. `1-3 of 14`).
+
+You can get that from your `<paginate>` component instance's `pageItemsCount` computed property. And in order to use that, you have to get an access to that component instance using `ref` property.
+
+An example:
+
+``` html
+<paginate ref="paginator"
+  name="items"
+  :list="items" 
+>
+  <li v-for="item in paginated('items')">
+    {{ item }}
+  </li>
+</paginate>
+<paginate-links for="items"></paginate-links>
+
+<span v-if="$refs.paginator">
+  Viewing {{$refs.paginator.pageItemsCount}} results
+</span>
+```
+
+An important thing to note here is `v-if="$refs.paginator"`. We needed to do that check to make sure our `<paginate>` component instance is completely rendered first. Otherwise, we'll get this error:
+
+`Cannot read property 'pageItemsCount' of undefined"`
 
 ### Paginate container
 
