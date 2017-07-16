@@ -49,7 +49,7 @@ Now, let’s see them in an example:
 ### Example
 
 In this example, we have a small list of items registered in our data list.
- 
+
 ``` js
 new Vue({
   el: '#app',
@@ -426,6 +426,69 @@ Here's an example:
 ```
 
 Note that this feature works on all link types – full links, simple links, and limited links.
+
+#### Custom Link Tag Support
+
+In some UI framework (such as [Semantic UI](https://semantic-ui.com/)), pagination menu is not supported by `<ul>`, `<li>` and `<a>` tag. Therefore, we allow tag customization in `paginate-links` with additional props.
+
+Default values renders to the following structure:
+
+```html
+<ul>
+  <li><a>1</a></li>
+  <li><a>2</a></li>
+  ...
+</ul>
+```
+
+We call the `<ul>` tag paginate link **container**, the `<li>` tag paginate list **item**, the `<a>` tag paginate **link**.
+
+Assume we want to achieve something like this:
+
+```html
+<div>
+  <a><span>1</span></a>
+  <a><span>2</span></a>
+  ...
+</div>
+```
+
+and let the click event handled in `<a>` tag at **item** level, we can customize tags such by setting props like this:
+
+```vue
+<paginate-links
+  containerTag="div"
+  itemTag="a"
+  linkTag="span"
+  clickHandlerTag="item"
+></paginate-links>
+```
+
+Note that the `clickHandlerTag` should be either `item` or by default `link`. Then by properly setting the classes prop, like
+
+```vue
+<paginate-links
+  for="languages"
+  containerTag="div"
+  itemTag="a"
+  linkTag="span"
+  clickHandlerTag="item"
+  v-bind:classes="{ 'a': [ 'item' ] }"
+  class="ui pagination menu"
+></paginate-links>
+```
+
+We can achieve something like this,
+
+```html
+<div class="ui pagination menu">
+  <a class="item"><span>1</span></a>
+  <a class="item"><span>2</span></a>
+  ...
+</div>
+```
+
+as indicated in the [Semantic UI docs](https://semantic-ui.com/collections/menu.html#pagination) (`<span>` does not influence the formatting here).
 
 ## License
 
