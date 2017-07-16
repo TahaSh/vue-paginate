@@ -46,6 +46,23 @@ export default {
     async: {
       type: Boolean,
       default: false
+    },
+    containerTag: {
+      type: String,
+      default: 'ul'
+    },
+    itemTag: {
+      type: String,
+      default: 'li'
+    },
+    linkTag: {
+      type: String,
+      default: 'a'
+    },
+    clickHandlerTag: {
+      type: String,
+      default: 'link',
+      validator: value => ['item', 'link'].indexOf(value) !== -1
     }
   },
   data () {
@@ -124,13 +141,13 @@ export default {
       return null
     }
 
-    const el = h('ul', {
+    const el = h(this.containerTag, {
       class: ['paginate-links', this.for]
     }, links)
 
     if (this.classes) {
       Vue.nextTick(() => {
-        addAdditionalClasses(el.elm, this.classes)
+        addAdditionalClasses(el.elm, this.classes, this.containerTag)
       })
     }
     return el
@@ -142,19 +159,15 @@ function getFullLinks (vm, h) {
     ? [vm.stepLinks.prev, ...vm.listOfPages, vm.stepLinks.next]
     : vm.listOfPages
   return allLinks.map(link => {
-    const data = {
-      on: {
-        click: (e) => {
-          e.preventDefault()
-          vm.currentPage = getTargetPageForLink(
-            link,
-            vm.limit,
-            vm.currentPage,
-            vm.listOfPages,
-            vm.stepLinks
-          )
-        }
-      }
+    const clickHandler = (e) => {
+      e.preventDefault()
+      vm.currentPage = getTargetPageForLink(
+        link,
+        vm.limit,
+        vm.currentPage,
+        vm.listOfPages,
+        vm.stepLinks
+      )
     }
     const liClasses = getClassesForLink(
       link,
@@ -165,7 +178,9 @@ function getFullLinks (vm, h) {
     const linkText = link === vm.stepLinks.next || link === vm.stepLinks.prev
       ? link
       : link + 1 // it means it's a number
-    return h('li', { class: liClasses }, [h('a', data, linkText)])
+    return vm.clickHandlerTag === 'link'
+      ? h(vm.itemTag, { class: liClasses }, [h(vm.linkTag, { on: { click: clickHandler } }, linkText)])
+      : h(vm.itemTag, { class: liClasses, on: { click: clickHandler } }, [h(vm.linkTag, {}, linkText)])
   })
 }
 
@@ -184,20 +199,16 @@ function getLimitedLinks (vm, h) {
   const limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
 
   return limitedLinks.map((link, index) => {
-    const data = {
-      on: {
-        click: (e) => {
-          e.preventDefault()
-          vm.currentPage = getTargetPageForLink(
-            link,
-            vm.limit,
-            vm.currentPage,
-            vm.listOfPages,
-            vm.stepLinks,
-            limitedLinksMetadata[index]
-          )
-        }
-      }
+    const clickHandler = (e) => {
+      e.preventDefault()
+      vm.currentPage = getTargetPageForLink(
+        link,
+        vm.limit,
+        vm.currentPage,
+        vm.listOfPages,
+        vm.stepLinks,
+        limitedLinksMetadata[index]
+      )
     }
     const liClasses = getClassesForLink(
       link,
@@ -209,32 +220,42 @@ function getLimitedLinks (vm, h) {
     // then incremented by 1 (since it's 0 based).
     // otherwise, do nothing (so, it's a symbol). 
     const text = Number.isInteger(link) ? link + 1 : link
-    return h('li', { class: liClasses }, [h('a', data, text)])
+    return vm.clickHandler === 'link'
+      ? h(vm.itemTag, { class: liClasses }, [h(vm.linkTag, { on: { click: clickHandler } }, text)])
+      : h(vm.itemTag, { class: liClasses, on: { click: clickHandler } }, [h(vm.linkTag, {}, text)])
   })
 }
 
 function getSimpleLinks (vm, h) {
   const lastPage = vm.listOfPages.length - 1
+  const prevClickHandler = (e) => {
+      e.preventDefault()
+      if (vm.currentPage > 0) vm.currentPage -= 1
+    }
+  const nextClickHandler =  (e) => {
+      e.preventDefault()
+      if (vm.currentPage < lastPage) vm.currentPage += 1
+    }
   const prevData = {
     on: {
-      click: (e) => {
-        e.preventDefault()
-        if (vm.currentPage > 0) vm.currentPage -= 1
-      }
+      click: prevClickHandler
     }
   }
+
   const nextData = {
     on: {
-      click: (e) => {
-        e.preventDefault()
-        if (vm.currentPage < lastPage) vm.currentPage += 1
-      }
+      click: nextClickHandler
     }
   }
-  const nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
-  const prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
-  const prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
-  const nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+  const nextListClass = ['next', vm.currentPage >= lastPage ? 'disabled' : '']
+  const prevListClass = ['prev', vm.currentPage <= 0 ? 'disabled' : '']
+  const prevLink = vm.clickHandlerTag === 'link'
+    ? h(vm.itemTag, { class: prevListClass }, [h(this.containerTag, { on: { click: prevClickHandler } }, vm.simple.prev)])
+    : h(vm.itemTag, { class: prevListClass, on: { click: prevClickHandler } }, [h(this.containerTag, {}, vm.simple.prev)])
+  const nextLink = vm.clickHandlerTag === 'link'
+    ? h(vm.itemTag, { class: nextListClass }, [h(this.containerTag, { on: { click: nextClickHandler } }, vm.simple.next)])
+    : h(vm.itemTag, { class: nextListClass, on: { click: nextClickHandler } }, [h(this.containerTag, {}, vm.simple.next)])
+ 
   return [prevLink, nextLink]
 }
 
@@ -313,23 +334,25 @@ function getLimitedLinksMetadata (limitedLinks) {
   })
 }
 
-function addAdditionalClasses (linksContainer, classes) {
+function addAdditionalClasses (linksContainer, classes, containerTag) {
   Object.keys(classes).forEach(selector => {
-    if (selector === 'ul') {
-      const selectorValue = classes['ul']
+    if (selector === containerTag) {
+      const selectorValue = classes[containerTag]
       if (Array.isArray(selectorValue)) {
         selectorValue.forEach(c => linksContainer.classList.add(c))
       } else {
         linksContainer.classList.add(selectorValue)
       }
     }
-    linksContainer.querySelectorAll(selector).forEach(node => {
+    let selectedTags = linksContainer.querySelectorAll(selector)
+    for (let i = 0; i < selectedTags.length; ++i) {
+      let node = selectedTags[i]
       const selectorValue = classes[selector]
       if (Array.isArray(selectorValue)) {
         selectorValue.forEach(c => node.classList.add(c))
       } else {
         node.classList.add(selectorValue)
       }
-    })
+    }
   })
 }

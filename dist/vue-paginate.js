@@ -6707,6 +6707,23 @@
       async: {
         type: Boolean,
         default: false
+      },
+      containerTag: {
+        type: String,
+        default: 'ul'
+      },
+      itemTag: {
+        type: String,
+        default: 'li'
+      },
+      linkTag: {
+        type: String,
+        default: 'a'
+      },
+      clickHandlerTag: {
+        type: String,
+        default: 'link',
+        validator: function (value) { return ['item', 'link'].indexOf(value) !== -1; }
       }
     },
     data: function data () {
@@ -6789,13 +6806,13 @@
         return null
       }
 
-      var el = h('ul', {
+      var el = h(this.containerTag, {
         class: ['paginate-links', this.for]
       }, links)
 
       if (this.classes) {
         Vue$3.nextTick(function () {
-          addAdditionalClasses(el.elm, this$1.classes)
+          addAdditionalClasses(el.elm, this$1.classes, this$1.containerTag)
         })
       }
       return el
@@ -6807,19 +6824,15 @@
       ? [vm.stepLinks.prev ].concat( vm.listOfPages, [vm.stepLinks.next])
       : vm.listOfPages
     return allLinks.map(function (link) {
-      var data = {
-        on: {
-          click: function (e) {
-            e.preventDefault()
-            vm.currentPage = getTargetPageForLink(
-              link,
-              vm.limit,
-              vm.currentPage,
-              vm.listOfPages,
-              vm.stepLinks
-            )
-          }
-        }
+      var clickHandler = function (e) {
+        e.preventDefault()
+        vm.currentPage = getTargetPageForLink(
+          link,
+          vm.limit,
+          vm.currentPage,
+          vm.listOfPages,
+          vm.stepLinks
+        )
       }
       var liClasses = getClassesForLink(
         link,
@@ -6830,7 +6843,9 @@
       var linkText = link === vm.stepLinks.next || link === vm.stepLinks.prev
         ? link
         : link + 1 // it means it's a number
-      return h('li', { class: liClasses }, [h('a', data, linkText)])
+      return vm.clickHandlerTag === 'link'
+        ? h(vm.itemTag, { class: liClasses }, [h(vm.linkTag, { on: { click: clickHandler } }, linkText)])
+        : h(vm.itemTag, { class: liClasses, on: { click: clickHandler } }, [h(vm.linkTag, {}, linkText)])
     })
   }
 
@@ -6849,20 +6864,16 @@
     var limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks)
 
     return limitedLinks.map(function (link, index) {
-      var data = {
-        on: {
-          click: function (e) {
-            e.preventDefault()
-            vm.currentPage = getTargetPageForLink(
-              link,
-              vm.limit,
-              vm.currentPage,
-              vm.listOfPages,
-              vm.stepLinks,
-              limitedLinksMetadata[index]
-            )
-          }
-        }
+      var clickHandler = function (e) {
+        e.preventDefault()
+        vm.currentPage = getTargetPageForLink(
+          link,
+          vm.limit,
+          vm.currentPage,
+          vm.listOfPages,
+          vm.stepLinks,
+          limitedLinksMetadata[index]
+        )
       }
       var liClasses = getClassesForLink(
         link,
@@ -6874,32 +6885,42 @@
       // then incremented by 1 (since it's 0 based).
       // otherwise, do nothing (so, it's a symbol). 
       var text = Number.isInteger(link) ? link + 1 : link
-      return h('li', { class: liClasses }, [h('a', data, text)])
+      return vm.clickHandler === 'link'
+        ? h(vm.itemTag, { class: liClasses }, [h(vm.linkTag, { on: { click: clickHandler } }, text)])
+        : h(vm.itemTag, { class: liClasses, on: { click: clickHandler } }, [h(vm.linkTag, {}, text)])
     })
   }
 
   function getSimpleLinks (vm, h) {
     var lastPage = vm.listOfPages.length - 1
+    var prevClickHandler = function (e) {
+        e.preventDefault()
+        if (vm.currentPage > 0) { vm.currentPage -= 1 }
+      }
+    var nextClickHandler =  function (e) {
+        e.preventDefault()
+        if (vm.currentPage < lastPage) { vm.currentPage += 1 }
+      }
     var prevData = {
       on: {
-        click: function (e) {
-          e.preventDefault()
-          if (vm.currentPage > 0) { vm.currentPage -= 1 }
-        }
+        click: prevClickHandler
       }
     }
+
     var nextData = {
       on: {
-        click: function (e) {
-          e.preventDefault()
-          if (vm.currentPage < lastPage) { vm.currentPage += 1 }
-        }
+        click: nextClickHandler
       }
     }
-    var nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
-    var prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
-    var prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
-    var nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+    var nextListClass = ['next', vm.currentPage >= lastPage ? 'disabled' : '']
+    var prevListClass = ['prev', vm.currentPage <= 0 ? 'disabled' : '']
+    var prevLink = vm.clickHandlerTag === 'link'
+      ? h(vm.itemTag, { class: prevListClass }, [h(this.containerTag, { on: { click: prevClickHandler } }, vm.simple.prev)])
+      : h(vm.itemTag, { class: prevListClass, on: { click: prevClickHandler } }, [h(this.containerTag, {}, vm.simple.prev)])
+    var nextLink = vm.clickHandlerTag === 'link'
+      ? h(vm.itemTag, { class: nextListClass }, [h(this.containerTag, { on: { click: nextClickHandler } }, vm.simple.next)])
+      : h(vm.itemTag, { class: nextListClass, on: { click: nextClickHandler } }, [h(this.containerTag, {}, vm.simple.next)])
+   
     return [prevLink, nextLink]
   }
 
@@ -6985,24 +7006,28 @@
     })
   }
 
-  function addAdditionalClasses (linksContainer, classes) {
+  function addAdditionalClasses (linksContainer, classes, containerTag) {
     Object.keys(classes).forEach(function (selector) {
-      if (selector === 'ul') {
-        var selectorValue = classes['ul']
+      if (selector === containerTag) {
+        var selectorValue = classes[containerTag]
         if (Array.isArray(selectorValue)) {
           selectorValue.forEach(function (c) { return linksContainer.classList.add(c); })
         } else {
           linksContainer.classList.add(selectorValue)
         }
       }
-      linksContainer.querySelectorAll(selector).forEach(function (node) {
-        var selectorValue = classes[selector]
-        if (Array.isArray(selectorValue)) {
-          selectorValue.forEach(function (c) { return node.classList.add(c); })
+      var selectedTags = linksContainer.querySelectorAll(selector)
+      var loop = function ( i ) {
+        var node = selectedTags[i]
+        var selectorValue$1 = classes[selector]
+        if (Array.isArray(selectorValue$1)) {
+          selectorValue$1.forEach(function (c) { return node.classList.add(c); })
         } else {
-          node.classList.add(selectorValue)
+          node.classList.add(selectorValue$1)
         }
-      })
+      };
+
+      for (var i = 0; i < selectedTags.length; ++i) loop( i );
     })
   }
 
