@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>Vue-Paginate v3.0</h1>
-    <paginate name="items" :list="items" ref="paginator" class="paginate-list">
+    <paginate name="items" :list="items" ref="paginator" class="paginate-list" :refreshCurrentPage="refreshCurrentPage">
       <li v-for="item in paginated('items')">
         {{ item }}
       </li>
@@ -24,6 +24,10 @@
     <span v-if="$refs.paginator">
       Viewing {{$refs.paginator.pageItemsCount}} results
     </span>
+    <br><br>
+    <button v-on:click="update()"> Reverses</button>
+    <br>
+    <input type="checkbox" v-model="refreshCurrentPage">refreshCurrentPage</input>
   </div>
 </template>
 
@@ -32,7 +36,13 @@ export default {
   data () {
     return {
       items: ['Item One', 'Item Two', 'Item Three', 'Item Four', 'Item Five', 'Item Six', 'Item Seven', 'Item Eight', 'Item Nine', 'Item Ten', 'Item Eleven', 'Item Twelve', 'Item Thirteen'],
-      paginate: ['items']
+      paginate: ['items'],
+      refreshCurrentPage: true
+    }
+  },
+  methods: {
+    update: function () {
+      this.items = this.items.reverse()
     }
   }
 }
@@ -71,24 +81,24 @@ li
       content: '⚬ '
       font-weight: bold
       color: slategray
-    
+
 .paginate-links.items
   user-select: none
   a
     cursor: pointer
-  
+
   li.active a
     font-weight: bold
-  
+
   li.next:before
     content: ' | '
     margin-right: 13px
     color: #ddd
-  
+
   li.disabled a
     color: #ccc
     cursor: no-drop
-  
+
 a
   color: #42b983
 

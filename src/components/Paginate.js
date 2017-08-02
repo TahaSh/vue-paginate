@@ -21,6 +21,10 @@ export default {
     tag: {
       type: String,
       default: 'ul'
+    },
+    refreshCurrentPage: {
+      type: Boolean,
+      default: true
     }
   },
   data () {
@@ -58,9 +62,13 @@ export default {
     currentPage () {
       this.paginateList()
     },
-    list () {
-      // On list change, refresh the paginated list
-      this.currentPage = 0
+    list (newList, oldList) {
+      // On list change, refresh the paginated list if <refreshCurrentPage>
+      // or list length changed
+      if (newList.length !== oldList.length || this.refreshCurrentPage) {
+        this.currentPage = 0
+      }
+
       this.paginateList()
     },
     per () {
