@@ -65,6 +65,10 @@
       tag: {
         type: String,
         default: 'ul'
+      },
+      refreshCurrentPage: {
+        type: Boolean,
+        default: true
       }
     },
     data: function data () {
@@ -102,9 +106,13 @@
       currentPage: function currentPage () {
         this.paginateList()
       },
-      list: function list () {
-        // On list change, refresh the paginated list
-        this.currentPage = 0
+      list: function list (newList, oldList) {
+        // On list change, refresh the paginated list if <refreshCurrentPage>
+        // or list length changed
+        if (newList.length !== oldList.length || this.refreshCurrentPage) {
+          this.currentPage = 0
+        }
+        console.log(this.currentPage)
         this.paginateList()
       },
       per: function per () {
