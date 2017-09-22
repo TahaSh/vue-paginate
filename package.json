@@ -1,6 +1,6 @@
 {
   "name": "vue-paginate",
-  "version": "3.5.0",
+  "version": "3.5.1",
   "description": "A simple vue.js plugin to paginate data",
   "main": "dist/vue-paginate.js",
   "scripts": {
@@ -59,7 +59,7 @@
     "karma-sinon-chai": "^1.2.4",
     "karma-source-map-support": "^1.1.0",
     "mocha": "^2.4.5",
-    "node-sass": "^4.2.0",
+    "node-sass": "^4.5.3",
     "phantomjs-prebuilt": "^2.1.7",
     "rollup": "^0.31.2",
     "rollup-plugin-babel": "^2.5.1",

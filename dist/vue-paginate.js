@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.5.0
+ * vue-paginate v3.5.1
  * (c) 2017 Taha Shashtari
  * @license MIT
  */
@@ -68,7 +68,9 @@
       }
     },
     data: function data () {
-      return {}
+      return {
+        initialListSize: this.list.length
+      }
     },
     computed: {
       currentPage: {
@@ -103,8 +105,10 @@
         this.paginateList()
       },
       list: function list () {
-        // On list change, refresh the paginated list
-        this.currentPage = 0
+        if (this.initialListSize !== this.list.length) {
+          // On list change, refresh the paginated list only if list size has changed
+          this.currentPage = 0
+        }
         this.paginateList()
       },
       per: function per () {

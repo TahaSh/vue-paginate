@@ -24,7 +24,9 @@ export default {
     }
   },
   data () {
-    return {}
+    return {
+      initialListSize: this.list.length
+    }
   },
   computed: {
     currentPage: {
@@ -59,8 +61,10 @@ export default {
       this.paginateList()
     },
     list () {
-      // On list change, refresh the paginated list
-      this.currentPage = 0
+      if (this.initialListSize !== this.list.length) {
+        // On list change, refresh the paginated list only if list size has changed
+        this.currentPage = 0
+      }
       this.paginateList()
     },
     per () {
