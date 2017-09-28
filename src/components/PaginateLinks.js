@@ -208,7 +208,7 @@ function getLimitedLinks (vm, h) {
     // If the link is a number,
     // then incremented by 1 (since it's 0 based).
     // otherwise, do nothing (so, it's a symbol). 
-    const text = Number.isInteger(link) ? link + 1 : link
+    const text = typeof link === 'number' && Math.floor(link) === link ? link + 1 : link
     return h('li', { class: liClasses }, [h('a', data, text)])
   })
 }
