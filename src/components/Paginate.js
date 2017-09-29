@@ -68,7 +68,6 @@ export default {
       if (newList.length !== oldList.length || this.refreshCurrentPage) {
         this.currentPage = 0
       }
-
       this.paginateList()
     },
     per () {

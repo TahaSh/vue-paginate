@@ -112,7 +112,6 @@
         if (newList.length !== oldList.length || this.refreshCurrentPage) {
           this.currentPage = 0
         }
-        console.log(this.currentPage)
         this.paginateList()
       },
       per: function per () {
