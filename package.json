@@ -33,9 +33,6 @@
     "slice",
     "vue"
   ],
-  "dependencies": {
-    "vue": "^2.3.3"
-  },
   "devDependencies": {
     "babel-core": "^6.21.0",
     "babel-loader": "^6.2.10",
