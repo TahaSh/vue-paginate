@@ -34,7 +34,7 @@
     "vue"
   ],
   "dependencies": {
-    "vue": "2.3.3"
+    "vue": "^2.3.3"
   },
   "devDependencies": {
     "babel-core": "^6.21.0",
