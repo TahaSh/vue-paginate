@@ -6885,6 +6885,9 @@
   function getSimpleLinks (vm, h) {
     var lastPage = vm.listOfPages.length - 1
     var prevData = {
+      domProps: {
+          innerHTML: vm.simple.prev
+      },
       on: {
         click: function (e) {
           e.preventDefault()
@@ -6893,6 +6896,9 @@
       }
     }
     var nextData = {
+      domProps: {
+          innerHTML: vm.simple.next
+      },
       on: {
         click: function (e) {
           e.preventDefault()
@@ -6902,8 +6908,8 @@
     }
     var nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
     var prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
-    var prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
-    var nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+    var prevLink = h('li', prevListData, [h('a', prevData)])
+    var nextLink = h('li', nextListData, [h('a', nextData)])
     return [prevLink, nextLink]
   }
 
