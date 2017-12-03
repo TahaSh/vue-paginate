@@ -216,6 +216,9 @@ function getLimitedLinks (vm, h) {
 function getSimpleLinks (vm, h) {
   const lastPage = vm.listOfPages.length - 1
   const prevData = {
+    domProps: {
+        innerHTML: vm.simple.prev
+    },
     on: {
       click: (e) => {
         e.preventDefault()
@@ -224,6 +227,9 @@ function getSimpleLinks (vm, h) {
     }
   }
   const nextData = {
+    domProps: {
+        innerHTML: vm.simple.next
+    },
     on: {
       click: (e) => {
         e.preventDefault()
@@ -233,8 +239,8 @@ function getSimpleLinks (vm, h) {
   }
   const nextListData = { class: ['next', vm.currentPage >= lastPage ? 'disabled' : ''] }
   const prevListData = { class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''] }
-  const prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)])
-  const nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)])
+  const prevLink = h('li', prevListData, [h('a', prevData)])
+  const nextLink = h('li', nextListData, [h('a', nextData)])
   return [prevLink, nextLink]
 }
 
