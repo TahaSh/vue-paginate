@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import LimitedLinksGenerator from '../util/LimitedLinksGenerator'
 import { LEFT_ARROW, RIGHT_ARROW, ELLIPSES } from '../config/linkTypes'
 import { warn } from '../util/debug'
@@ -83,7 +82,7 @@ export default {
     if (this.stepLinks && !this.stepLinks.prev) {
       warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'prev' value.`, this.$parent)
     }
-    Vue.nextTick(() => {
+    this.$nextTick(() => {
       this.updateListOfPages()
     })
   },
@@ -129,7 +128,7 @@ export default {
     }, links)
 
     if (this.classes) {
-      Vue.nextTick(() => {
+      this.$nextTick(() => {
         addAdditionalClasses(el.elm, this.classes)
       })
     }
