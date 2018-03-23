@@ -323,7 +323,7 @@ function addAdditionalClasses (linksContainer, classes) {
         linksContainer.classList.add(selectorValue)
       }
     }
-    linksContainer.querySelectorAll(selector).forEach(node => {
+    Array.prototype.slice.call(linksContainer.querySelectorAll(selector), 0).forEach(node => {
       const selectorValue = classes[selector]
       if (Array.isArray(selectorValue)) {
         selectorValue.forEach(c => node.classList.add(c))
