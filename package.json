@@ -59,7 +59,7 @@
     "karma-sinon-chai": "^1.2.4",
     "karma-source-map-support": "^1.1.0",
     "mocha": "^2.4.5",
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.8.3",
     "phantomjs-prebuilt": "^2.1.7",
     "rollup": "^0.31.2",
     "rollup-plugin-babel": "^2.5.1",
