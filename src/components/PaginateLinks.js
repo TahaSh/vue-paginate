@@ -206,8 +206,8 @@ function getLimitedLinks (vm, h) {
     )
     // If the link is a number,
     // then incremented by 1 (since it's 0 based).
-    // otherwise, do nothing (so, it's a symbol). 
-    const text = Number.isInteger(link) ? link + 1 : link
+    // otherwise, do nothing (so, it's a symbol).
+    const text = (link === parseInt(link, 10)) ? link + 1 : link
     return h('li', { class: liClasses }, [h('a', data, text)])
   })
 }

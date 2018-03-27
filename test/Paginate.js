@@ -47,15 +47,14 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('refreshes the paginated list and start from first page when the full list is changed', done => {
+  it('refreshes the paginated list and make sure the current page is not out of scope when the full list is changed', done => {
     vm.paginate.langs.page = 1
     vm.langs = ['foo', 'bar', 'baz', 'quix']
     Vue.nextTick(() => {
-      expect(vm.paginate.langs.list).to.include.members(['foo', 'bar'])
+      expect(vm.paginate.langs.list).to.include.members(['baz', 'quix'])
       expect(vm.paginate.langs.list).to.not.include.members(['JavaScript', 'PHP'])
       done()
     })
-
   })
 
   it('allows `per` prop to be dynamic', (done) => {

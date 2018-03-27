@@ -44,6 +44,10 @@ export default {
       const first = this.currentPage * this.per + 1
       const last = Math.min((this.currentPage * this.per) + this.per, numOfItems)
       return `${first}-${last} of ${numOfItems}`
+    },
+
+    lastPage () {
+      return Math.ceil(this.list.length / this.per)
     }
   },
   mounted () {
@@ -61,9 +65,8 @@ export default {
       this.paginateList()
     },
     list () {
-      if (this.initialListSize !== this.list.length) {
-        // On list change, refresh the paginated list only if list size has changed
-        this.currentPage = 0
+      if (this.currentPage >= this.lastPage) {
+        this.currentPage = this.lastPage - 1
       }
       this.paginateList()
     },
@@ -79,9 +82,9 @@ export default {
       this.$parent.paginate[this.name].list = paginatedList
     },
     goToPage (page) {
-      const maxPage = Math.ceil(this.list.length / this.per)
-      if (page > maxPage) {
-        warn(`You cannot go to page ${page}. The last page is ${maxPage}.`, this.$parent)
+      const lastPage = Math.ceil(this.list.length / this.per)
+      if (page > lastPage) {
+        warn(`You cannot go to page ${page}. The last page is ${lastPage}.`, this.$parent)
         return
       }
       this.currentPage = page - 1
