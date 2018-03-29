@@ -45,6 +45,10 @@ export default {
     async: {
       type: Boolean,
       default: false
+    },
+    container: {
+      type: Object,
+      default: null
     }
   },
   data () {
@@ -55,39 +59,45 @@ export default {
     }
   },
   computed: {
+    parent () {
+      return this.container ? this.container.el : this.$parent
+    },
+    state () {
+      return this.container ? this.container.state : this.$parent.paginate[this.for]
+    },
     currentPage: {
       get () {
-        if (this.$parent.paginate[this.for]) {
-          return this.$parent.paginate[this.for].page
+        if (this.state) {
+          return this.state.page
         }
       },
       set (page) {
-        this.$parent.paginate[this.for].page = page
+        this.state.page = page
       }
     }
   },
   mounted () {
     if (this.simple && this.limit) {
-      warn(`<paginate-links for="${this.for}"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored.`, this.$parent, 'warn')
+      warn(`<paginate-links for="${this.for}"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored.`, this.parent, 'warn')
     }
     if (this.simple && !this.simple.next) {
-      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'next' value.`, this.$parent)
+      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'next' value.`, this.parent)
     }
     if (this.simple && !this.simple.prev) {
-      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'prev' value.`, this.$parent)
+      warn(`<paginate-links for="${this.for}"> 'simple' prop doesn't contain 'prev' value.`, this.parent)
     }
     if (this.stepLinks && !this.stepLinks.next) {
-      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'next' value.`, this.$parent)
+      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'next' value.`, this.parent)
     }
     if (this.stepLinks && !this.stepLinks.prev) {
-      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'prev' value.`, this.$parent)
+      warn(`<paginate-links for="${this.for}"> 'step-links' prop doesn't contain 'prev' value.`, this.parent)
     }
     this.$nextTick(() => {
       this.updateListOfPages()
     })
   },
   watch: {
-    '$parent.paginate': {
+    'state': {
       handler () {
         this.updateListOfPages()
       },
@@ -99,11 +109,11 @@ export default {
   },
   methods: {
     updateListOfPages () {
-      this.target = getTargetPaginateComponent(this.$parent.$children, this.for)
+      this.target = getTargetPaginateComponent(this.parent.$children, this.for)
       if (!this.target) {
         if (this.async) return
-        warn(`<paginate-links for="${this.for}"> can't be used without its companion <paginate name="${this.for}">`, this.$parent)
-        warn(`To fix that issue you may need to use :async="true" on <paginate-links> component to allow for asyncronous rendering`, this.$parent, 'warn')
+        warn(`<paginate-links for="${this.for}"> can't be used without its companion <paginate name="${this.for}">`, this.parent)
+        warn(`To fix that issue you may need to use :async="true" on <paginate-links> component to allow for asyncronous rendering`, this.parent, 'warn')
         return
       }
       this.numberOfPages = Math.ceil(this.target.list.length / this.target.per)
