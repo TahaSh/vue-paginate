@@ -1,5 +1,5 @@
 /**
- * vue-paginate v3.5.1
+ * vue-paginate v3.6.0
  * (c) 2018 Taha Shashtari
  * @license MIT
  */
@@ -65,6 +65,10 @@
       tag: {
         type: String,
         default: 'ul'
+      },
+      container: {
+        type: Object,
+        default: null
       }
     },
     data: function data () {
@@ -73,14 +77,17 @@
       }
     },
     computed: {
+      parent: function parent () {
+        return this.container ? this.container : this.$parent
+      },
       currentPage: {
         get: function get () {
-          if (this.$parent.paginate[this.name]) {
-            return this.$parent.paginate[this.name].page
+          if (this.parent.paginate[this.name]) {
+            return this.parent.paginate[this.name].page
           }
         },
         set: function set (page) {
-          this.$parent.paginate[this.name].page = page
+          this.parent.paginate[this.name].page = page
         }
       },
       pageItemsCount: function pageItemsCount () {
@@ -88,14 +95,18 @@
         var first = this.currentPage * this.per + 1
         var last = Math.min((this.currentPage * this.per) + this.per, numOfItems)
         return (first + "-" + last + " of " + numOfItems)
+      },
+
+      lastPage: function lastPage () {
+        return Math.ceil(this.list.length / this.per)
       }
     },
     mounted: function mounted () {
       if (this.per <= 0) {
-        warn(("<paginate name=\"" + (this.name) + "\"> 'per' prop can't be 0 or less."), this.$parent)
+        warn(("<paginate name=\"" + (this.name) + "\"> 'per' prop can't be 0 or less."), this.parent)
       }
-      if (!this.$parent.paginate[this.name]) {
-        warn(("'" + (this.name) + "' is not registered in 'paginate' array."), this.$parent)
+      if (!this.parent.paginate[this.name]) {
+        warn(("'" + (this.name) + "' is not registered in 'paginate' array."), this.parent)
         return
       }
       this.paginateList()
@@ -105,9 +116,8 @@
         this.paginateList()
       },
       list: function list () {
-        if (this.initialListSize !== this.list.length) {
-          // On list change, refresh the paginated list only if list size has changed
-          this.currentPage = 0
+        if (this.currentPage >= this.lastPage) {
+          this.currentPage = this.lastPage - 1
         }
         this.paginateList()
       },
@@ -120,12 +130,12 @@
       paginateList: function paginateList () {
         var index = this.currentPage * this.per
         var paginatedList = this.list.slice(index, index + this.per)
-        this.$parent.paginate[this.name].list = paginatedList
+        this.parent.paginate[this.name].list = paginatedList
       },
       goToPage: function goToPage (page) {
-        var maxPage = Math.ceil(this.list.length / this.per)
-        if (page > maxPage) {
-          warn(("You cannot go to page " + page + ". The last page is " + maxPage + "."), this.$parent)
+        var lastPage = Math.ceil(this.list.length / this.per)
+        if (page > lastPage) {
+          warn(("You cannot go to page " + page + ". The last page is " + lastPage + "."), this.parent)
           return
         }
         this.currentPage = page - 1
@@ -232,6 +242,10 @@
       async: {
         type: Boolean,
         default: false
+      },
+      container: {
+        type: Object,
+        default: null
       }
     },
     data: function data () {
@@ -242,14 +256,20 @@
       }
     },
     computed: {
+      parent: function parent () {
+        return this.container ? this.container.el : this.$parent
+      },
+      state: function state () {
+        return this.container ? this.container.state : this.$parent.paginate[this.for]
+      },
       currentPage: {
         get: function get () {
-          if (this.$parent.paginate[this.for]) {
-            return this.$parent.paginate[this.for].page
+          if (this.state) {
+            return this.state.page
           }
         },
         set: function set (page) {
-          this.$parent.paginate[this.for].page = page
+          this.state.page = page
         }
       }
     },
@@ -257,26 +277,26 @@
       var this$1 = this;
 
       if (this.simple && this.limit) {
-        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored."), this.$parent, 'warn')
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored."), this.parent, 'warn')
       }
       if (this.simple && !this.simple.next) {
-        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'next' value."), this.$parent)
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'next' value."), this.parent)
       }
       if (this.simple && !this.simple.prev) {
-        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'prev' value."), this.$parent)
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'simple' prop doesn't contain 'prev' value."), this.parent)
       }
       if (this.stepLinks && !this.stepLinks.next) {
-        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'next' value."), this.$parent)
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'next' value."), this.parent)
       }
       if (this.stepLinks && !this.stepLinks.prev) {
-        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'prev' value."), this.$parent)
+        warn(("<paginate-links for=\"" + (this.for) + "\"> 'step-links' prop doesn't contain 'prev' value."), this.parent)
       }
       this.$nextTick(function () {
         this$1.updateListOfPages()
       })
     },
     watch: {
-      '$parent.paginate': {
+      'state': {
         handler: function handler () {
           this.updateListOfPages()
         },
@@ -288,11 +308,11 @@
     },
     methods: {
       updateListOfPages: function updateListOfPages () {
-        this.target = getTargetPaginateComponent(this.$parent.$children, this.for)
+        this.target = getTargetPaginateComponent(this.parent.$children, this.for)
         if (!this.target) {
           if (this.async) { return }
-          warn(("<paginate-links for=\"" + (this.for) + "\"> can't be used without its companion <paginate name=\"" + (this.for) + "\">"), this.$parent)
-          warn("To fix that issue you may need to use :async=\"true\" on <paginate-links> component to allow for asyncronous rendering", this.$parent, 'warn')
+          warn(("<paginate-links for=\"" + (this.for) + "\"> can't be used without its companion <paginate name=\"" + (this.for) + "\">"), this.parent)
+          warn("To fix that issue you may need to use :async=\"true\" on <paginate-links> component to allow for asyncronous rendering", this.parent, 'warn')
           return
         }
         this.numberOfPages = Math.ceil(this.target.list.length / this.target.per)
@@ -397,8 +417,8 @@
       )
       // If the link is a number,
       // then incremented by 1 (since it's 0 based).
-      // otherwise, do nothing (so, it's a symbol). 
-      var text = Number.isInteger(link) ? link + 1 : link
+      // otherwise, do nothing (so, it's a symbol).
+      var text = (link === parseInt(link, 10)) ? link + 1 : link
       return h('li', { class: liClasses }, [h('a', data, text)])
     })
   }
