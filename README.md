@@ -158,6 +158,50 @@ To fix this issue we have to tell our `PaginateLinks` to wait for its companion 
 ```
 *So the bottom line is this: `<paginate>` component should always be rendered before `<paginate-links>` component.*
 
+### Using it inside a component's slot
+
+`Paginate` and `PaginateLinks` components get their current state from the parent component they're used in. You can find that state defined inside an object called `paginate`. For example, if your pagination is named `languages`, its state will be defined inside `paginate.languages`.
+
+But what if those components are used inside a [slot](https://vuejs.org/v2/guide/components-slots.html#Slot-Content)? In this case, its parent component will be the slot's component (not the component it's defined in).
+
+In this case we have to tell our pagination components where they can find the component that contains their state. We can do so using the `container` prop.
+
+Although both components, `Paginate` and `PaginateLinks`, use the same prop name, they take different values. `Paginate` component just needs the reference to the parent component that has its state. That value is usually `this`.
+
+`PaginateLinks`, however, takes an object with two values: `state` and `el`.
+
+`state` takes the current state object of the pagination. This value can be, for example, `paginate.languages`.
+
+For `el` we should pass a reference to the component that contains `Paginate` component. In most cases it will be the component with the slot. For example: `$refs.layout`.
+
+#### Example
+
+Note: this example is based on the previous example.
+
+``` html
+<div id="app">
+  <layout ref="layout">
+    <paginate
+      name="languages"
+      :list="langs"
+      :per="2"
+      :container="this"
+    >
+      <li v-for="lang in paginated('languages')">
+        {{ lang }}
+      </li>
+    </paginate>
+    <paginate-links
+      for="languages"
+      :container="{
+        state: paginate.languages,
+        el: $refs.layout
+      }"
+    />
+  </layout>
+</div>
+```
+
 ### Types of paginate links
 
 `vue-paginate` provides us with three different types of pagination links:
