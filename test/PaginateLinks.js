@@ -230,7 +230,7 @@ describe('PaginateLinks.vue', () => {
       });
     });
 
-    describe('step links for limited links', done => {
+    describe('step links for limited links', () => {
       beforeEach(() => {
         vm = new Vue({
           components: { Paginate, PaginateLinks },
