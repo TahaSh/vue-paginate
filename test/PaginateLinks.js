@@ -65,11 +65,10 @@ describe('PaginateLinks.vue', () => {
             ></paginate>
             <paginate-links for="langs"
               :show-step-links="true"
-              :step-links="{
-                prev: 'P',
-                next: 'N'
-              }"
-            ></paginate-links>
+            >
+              <template slot="prev">P</template>
+              <template slot="next">N</template>
+            </paginate-links>
           </div>`,
       }).$mount();
 
@@ -106,10 +105,9 @@ describe('PaginateLinks.vue', () => {
             ></paginate>
             <paginate-links
               for="langs"
-              :simple="{
-                prev: 'Previous',
-                next: 'Next'
-              }">
+              :simple="true">
+              <template slot="prev">Previous</template>
+              <template slot="next">Next</template>
             </paginate-links>
           </div>`,
       }).$mount();
@@ -310,11 +308,10 @@ describe('PaginateLinks.vue', () => {
               <paginate-links for="langs"
                 :limit="2"
                 :show-step-links="true"
-                :step-links="{
-                  next: 'N',
-                  prev: 'P'
-                }"
-              ></paginate-links>
+              >
+                <template slot="prev">P</template>
+                <template slot="next">N</template>
+              </paginate-links>
             </div>`,
         }).$mount();
 

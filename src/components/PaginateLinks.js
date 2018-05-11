@@ -14,21 +14,8 @@ export default {
       default: 0,
     },
     simple: {
-      type: Object,
-      default: null,
-      validator(obj) {
-        return obj.prev && obj.next;
-      },
-    },
-    stepLinks: {
-      type: Object,
-      default: () => ({
-        prev: LEFT_ARROW,
-        next: RIGHT_ARROW,
-      }),
-      validator(obj) {
-        return obj.prev && obj.next;
-      },
+      type: Boolean,
+      default: false,
     },
     showStepLinks: {
       type: Boolean,
@@ -84,38 +71,6 @@ export default {
         }"> 'simple' and 'limit' props can't be used at the same time. In this case, 'simple' will take precedence, and 'limit' will be ignored.`,
         this.parent,
         'warn'
-      );
-    }
-    if (this.simple && !this.simple.next) {
-      warn(
-        `<paginate-links for="${
-          this.for
-        }"> 'simple' prop doesn't contain 'next' value.`,
-        this.parent
-      );
-    }
-    if (this.simple && !this.simple.prev) {
-      warn(
-        `<paginate-links for="${
-          this.for
-        }"> 'simple' prop doesn't contain 'prev' value.`,
-        this.parent
-      );
-    }
-    if (this.stepLinks && !this.stepLinks.next) {
-      warn(
-        `<paginate-links for="${
-          this.for
-        }"> 'step-links' prop doesn't contain 'next' value.`,
-        this.parent
-      );
-    }
-    if (this.stepLinks && !this.stepLinks.prev) {
-      warn(
-        `<paginate-links for="${
-          this.for
-        }"> 'step-links' prop doesn't contain 'prev' value.`,
-        this.parent
       );
     }
     this.$nextTick(() => {
@@ -188,8 +143,13 @@ export default {
 };
 
 function getFullLinks(vm, h) {
+  const stepLinks = {
+    prev: vm.$slots.prev ? vm.$slots.prev : LEFT_ARROW,
+    next: vm.$slots.next ? vm.$slots.next : RIGHT_ARROW,
+  };
+
   const allLinks = vm.showStepLinks
-    ? [vm.stepLinks.prev, ...vm.listOfPages, vm.stepLinks.next]
+    ? [stepLinks.prev, ...vm.listOfPages, stepLinks.next]
     : vm.listOfPages;
   return allLinks.map(link => {
     const data = {
@@ -201,7 +161,7 @@ function getFullLinks(vm, h) {
             vm.limit,
             vm.currentPage,
             vm.listOfPages,
-            vm.stepLinks
+            stepLinks
           );
         },
       },
@@ -210,26 +170,28 @@ function getFullLinks(vm, h) {
       link,
       vm.currentPage,
       vm.listOfPages.length - 1,
-      vm.stepLinks
+      stepLinks
     );
     const linkText =
-      link === vm.stepLinks.next || link === vm.stepLinks.prev
-        ? link
-        : link + 1; // it means it's a number
+      link === stepLinks.next || link === stepLinks.prev ? link : link + 1; // it means it's a number
     return h('li', { class: liClasses }, [h('a', data, linkText)]);
   });
 }
 
 function getLimitedLinks(vm, h) {
+  const stepLinks = {
+    prev: vm.$slots.prev ? vm.$slots.prev : LEFT_ARROW,
+    next: vm.$slots.next ? vm.$slots.next : RIGHT_ARROW,
+  };
   let limitedLinks = new LimitedLinksGenerator(
     vm.listOfPages,
     vm.currentPage,
     vm.limit,
-    vm.stepLinks
+    stepLinks
   ).generate();
 
   limitedLinks = vm.showStepLinks
-    ? [vm.stepLinks.prev, ...limitedLinks, vm.stepLinks.next]
+    ? [stepLinks.prev, ...limitedLinks, stepLinks.next]
     : limitedLinks;
 
   const limitedLinksMetadata = getLimitedLinksMetadata(limitedLinks);
@@ -244,7 +206,7 @@ function getLimitedLinks(vm, h) {
             vm.limit,
             vm.currentPage,
             vm.listOfPages,
-            vm.stepLinks,
+            stepLinks,
             limitedLinksMetadata[index]
           );
         },
@@ -254,7 +216,7 @@ function getLimitedLinks(vm, h) {
       link,
       vm.currentPage,
       vm.listOfPages.length - 1,
-      vm.stepLinks
+      stepLinks
     );
     // If the link is a number,
     // then incremented by 1 (since it's 0 based).
@@ -288,8 +250,13 @@ function getSimpleLinks(vm, h) {
   const prevListData = {
     class: ['prev', vm.currentPage <= 0 ? 'disabled' : ''],
   };
-  const prevLink = h('li', prevListData, [h('a', prevData, vm.simple.prev)]);
-  const nextLink = h('li', nextListData, [h('a', nextData, vm.simple.next)]);
+
+  const prevLink = h('li', prevListData, [
+    h('a', prevData, [vm.$slots.prev ? vm.$slots.prev : LEFT_ARROW]),
+  ]);
+  const nextLink = h('li', nextListData, [
+    h('a', nextData, [vm.$slots.next ? vm.$slots.next : RIGHT_ARROW]),
+  ]);
   return [prevLink, nextLink];
 }
 

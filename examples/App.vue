@@ -17,23 +17,60 @@
     <paginate-links
       :show-step-links="true"
       for="items"
-    />
+    >
+      <template slot="prev">&larr;</template>
+      <template slot="next">&rarr;</template>
+    </paginate-links>
     <paginate-links
       :show-step-links="true"
       :limit="2"
-      :step-links="{
-        next: 'N',
-        prev: 'P'
-      }"
       for="items"
-    />
+    >
+      <template slot="prev">Previous</template>
+      <template slot="next">Next</template>
+    </paginate-links>
     <paginate-links
-      :simple="{
-        next: 'Next »',
-        prev: '« Back'
-      }"
+      :simple="true"
       for="items"
-    />
+    >
+      <template slot="prev">
+        <svg
+          width="20px"
+          height="15px"
+          viewBox="0 0 20 20"
+          xml:space="preserve"
+        >
+          <polyline
+            fill="none"
+            stroke="#42b983"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            points="17,3 3,10 17,17"
+          />
+        </svg>
+      </template>
+      <template slot="next">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          width="20px"
+          height="15px"
+          viewBox="0 0 20 20"
+          xml:space="preserve"
+        >
+          <polyline
+            fill="none"
+            stroke="#42b983"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            points="3,3 17,10 3,17"
+          />
+        </svg>
+
+      </template>
+    </paginate-links>
     <span v-if="$refs.paginator">
       Viewing {{ $refs.paginator.pageItemsCount }} results
     </span>
@@ -112,9 +149,11 @@ li
     margin-right: 13px
     color: #ddd
 
-  li.disabled a
-    color: #ccc
-    cursor: no-drop
+  li.disabled
+    a, polyline
+      stroke: #ccc
+      color: #ccc
+      cursor: no-drop
 
 a
   color: #42b983
