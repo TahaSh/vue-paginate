@@ -14,18 +14,18 @@ You have two ways to setup `vue-paginate`:
 
 #### CommonJS (Webpack/Browserify)
 
-- ES6
+* ES6
 
 ```js
-import VuePaginate from 'vue-paginate'
-Vue.use(VuePaginate)
+import VuePaginate from 'vue-paginate';
+Vue.use(VuePaginate);
 ```
 
-- ES5
+* ES5
 
 ```js
-var VuePaginate = require('vue-paginate')
-Vue.use(VuePaginate)
+var VuePaginate = require('vue-paginate');
+Vue.use(VuePaginate);
 ```
 
 #### Include
@@ -40,37 +40,37 @@ Include it directly with a `<script>` tag. In this case, you don't need to write
 
 To paginate any list of data, we have to follow these three small steps:
 
-1. Register the name of the paginated list.
-2. Use `Paginate` component to paginate and display the paginated list.
-3. Use `PaginateLinks` component to display the links for the pagination.
+1.  Register the name of the paginated list.
+2.  Use `Paginate` component to paginate and display the paginated list.
+3.  Use `PaginateLinks` component to display the links for the pagination.
 
 Now, let’s see them in an example:
 
 ### Example
 
 In this example, we have a small list of items registered in our data list.
- 
-``` js
+
+```js
 new Vue({
   el: '#app',
   data: {
-    langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang']
-  }
-})
+    langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang'],
+  },
+});
 ```
 
 Now, let’s see how we can paginate this list to display two items per page.
 
 First step is to register the name of our future paginated list. We register it by adding it to an array called `paginate`.
 
-``` js
+```js
 new Vue({
   el: '#app',
   data: {
     langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang'],
-    paginate: ['languages']
-  }
-})
+    paginate: ['languages'],
+  },
+});
 ```
 
 Note that you can name it the same as the original list – I named it differently here just for the sake of clarity.
@@ -83,7 +83,7 @@ After that, you start using the paginated list inside the body of that `<paginat
 
 Here’s how it looks in action:
 
-``` html
+```html
 <paginate
   name="languages"
   :list="langs"
@@ -103,7 +103,7 @@ However, we still don’t have a way to navigate through those pages. Here’s w
 
 All that component needs to know is the name of the registered paginated list. We pass that using its `for` prop. Like this:
 
-``` html
+```html
 <paginate-links for="languages"></paginate-links>
 ```
 
@@ -116,12 +116,13 @@ A common error users get when using this plugin is this:
 > [vue-paginate]: <paginate-links for="items"> can't be used without its companion <paginate name="items">
 
 This error occurs for two reasons:
-1. You haven't added your `<paginate>` yet! — Just add it and it will be fixed.
-2. Or your defined `<paginate>` component is rendered after its companion `<paginate-links>` has been rendered (usually happens when using `v-if` on `<paginate>` or on one of its parents)
+
+1.  You haven't added your `<paginate>` yet! — Just add it and it will be fixed.
+2.  Or your defined `<paginate>` component is rendered after its companion `<paginate-links>` has been rendered (usually happens when using `v-if` on `<paginate>` or on one of its parents)
 
 Here's some contrived example of the second case:
 
-``` html
+```html
 <paginate v-if="shown"
   name="items"
   :list="items"
@@ -133,30 +134,31 @@ Here's some contrived example of the second case:
 <paginate-links for="items"></paginate-links>
 ```
 
-``` js
+```js
 new Vue({
   el: '#app',
   data: {
     langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang'],
     paginate: ['languages'],
-    shown: false
+    shown: false,
   },
-  mounted () {
+  mounted() {
     setTimeout(() => {
-      this.shown = true
-    }, 1000)
-  }
-})
+      this.shown = true;
+    }, 1000);
+  },
+});
 ```
 
 If you try this example in the browser, you'll see the error described in this section. And the reason for that is because our `PaginateLinks` component can't find its companion `Paginate` component to show the links for — since it takes a complete second to render itself.
 
 To fix this issue we have to tell our `PaginateLinks` to wait for its companion `Paginate` component to be rendered first. And we can do that simply by using `:async="true"` on `<paginate-links>`.
 
-``` html
+```html
 <paginate-links for="items" :async="true"></paginate-links>
 ```
-*So the bottom line is this: `<paginate>` component should always be rendered before `<paginate-links>` component.*
+
+_So the bottom line is this: `<paginate>` component should always be rendered before `<paginate-links>` component._
 
 ### Using it inside a component's slot
 
@@ -178,7 +180,7 @@ For `el` we should pass a reference to the component that contains `Paginate` co
 
 Note: this example is based on the previous example.
 
-``` html
+```html
 <div id="app">
   <layout ref="layout">
     <paginate
@@ -206,9 +208,9 @@ Note: this example is based on the previous example.
 
 `vue-paginate` provides us with three different types of pagination links:
 
-1. Full list of links. This is the default behavior, which displays all available page links from page 1 to N.
-2. Simple links. It contains only two links: *Previous* and *Next*.
-3. Limited links. It limits the number of displayed links, and provides left and right arrows to help you navigate between them.
+1.  Full list of links. This is the default behavior, which displays all available page links from page 1 to N.
+2.  Simple links. It contains only two links: _Previous_ and _Next_.
+3.  Limited links. It limits the number of displayed links, and provides left and right arrows to help you navigate between them.
 
 #### Full links
 
@@ -216,24 +218,23 @@ To use this you don’t have to do anything; this is the default behavior.
 
 #### Simple links
 
-For this, we use the `simple` prop, which accepts an object that contains the names of the *Previous* and *Next* links. For example:
+For this, we use the `simple` prop, which accepts a Boolean. Use slot `next` and `prev` for the link content. For example:
 
-``` html
+```html
 <paginate-links
   for="languages"
-  :simple="{
-    prev: 'Back',
-    next: 'Next'
-  }"
-></paginate-links>
+  :simple="true"
+>
+    <template slot="prev">Previous</template>
+    <template slot="next">Next</template>
+</paginate-links>
 ```
-
 
 #### Limited links
 
 To activate this mode, you just need to specify the limit using the `limit` prop. Like this:
 
-``` html
+```html
 <paginate-links
   for="languages"
   :limit="2"
@@ -244,39 +245,41 @@ To activate this mode, you just need to specify the limit using the `limit` prop
 
 As in simple links, you can have next/previous links — which I call step links — in full links and limited links. To add them, use `:show-step-links="true"` prop on the `PaginateLinks` component you want. For example:
 
-``` html
+```html
 <paginate-links
   for="languages"
   :show-step-links="true"
-></paginate-links>
+>
+    <template slot="prev">Previous</template>
+    <template slot="next">Next</template>
+</paginate-links>
 ```
 
 #### Customizing step links
 
-The default symbols for the step links are `«` for previous and `»` for next. But, of course, you can change them to what you want using the `:step-links` prop, like this:
+The default symbols for the step links are `«` for previous and `»` for next. But, of course, you can change them to what you want using the `next` and `prev` slot, like this:
 
-``` html
+```html
 <paginate-links for="languages"
   :show-step-links="true"
-  :step-links="{
-    next: 'N',
-    prev: 'P'
-  }"
-></paginate-links>
+>
+    <template slot="prev">Previous</template>
+    <template slot="next">Next</template>
+</paginate-links>
 ```
 
 ### Listening to links @change event
 
 When the current page changes, `PaginateLinks` emits an event called `change` to inform you about that. It also passes the switched page numbers with it, if you need them.
 
-``` html
+```html
 <paginate-links
   for="languages"
   @change="onLangsPageChange"
 ></paginate-links>
 ```
 
-``` js
+```js
 methods: {
   onLangsPageChange (toPage, fromPage) {
     // handle here…
@@ -292,7 +295,7 @@ To access this method, you need to get an access to your `<paginate>` component 
 
 Here's an example:
 
-``` html
+```html
 <paginate ref="paginator"
   name="items"
   :list="items"
@@ -304,7 +307,7 @@ Here's an example:
 <button @click="goToSecondPage">Go to second page</button>
 ```
 
-``` js
+```js
 methods: {
   goToSecondPage () {
     if (this.$refs.paginator) {
@@ -322,10 +325,10 @@ You can get that from your `<paginate>` component instance's `pageItemsCount` co
 
 An example:
 
-``` html
+```html
 <paginate ref="paginator"
   name="items"
-  :list="items" 
+  :list="items"
 >
   <li v-for="item in paginated('items')">
     {{ item }}
@@ -346,7 +349,7 @@ An important thing to note here is `v-if="$refs.paginator"`. We needed to do tha
 
 The default element `vue-paginate` uses for the `<paginate>` container is `UL`. But, of course, you can change it to whatever you want using the `tag` prop. And the same is true for its class using the `class` prop.
 
-``` html
+```html
 <paginate
   name="languages"
   :list="langs"
@@ -372,7 +375,7 @@ There’s nothing special the plugin does to support list filtering. It’s your
 
 So, if we were to filter the list (or any other operation), we would have something similar to this:
 
-``` js
+```js
 // Assume we have a text input bound to `searchLangs` data via v-model for example.
 computed: {
   fLangs () {
@@ -388,7 +391,7 @@ Then just pass that `fLangs` to the `list` prop instead of the original `langs`.
 
 By default, paginated links will always be displayed even if there's only one page. But sometimes you want to hide it when there's a single page — especially after filtering the items. The plugin allows you to do so by using the `:hide-single-page="true"` prop.
 
-``` html
+```html
 <paginate-links for="items"
   :hide-single-page="true"
 ></paginate-links>
@@ -400,7 +403,7 @@ In `vue-paginate`, you can customize every bit of your pagination links.
 
 But first, let’s see the html structure used for all link types:
 
-``` html
+```html
 <ul>
   <li><a>1</a></li>
   <li><a>2</a></li>
@@ -454,13 +457,9 @@ In some cases, especially when you're using a CSS framework, you'll need to add 
 
 Here's an example:
 
-``` html
+```html
 <paginate-links
   for="languages"
-  :simple="{
-    prev: 'Back',
-    next: 'Next'
-  }"
   :classes="{
     'ul': 'simple-links-container',
     '.next > a': 'next-link',
