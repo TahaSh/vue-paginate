@@ -1,41 +1,68 @@
 <template>
   <div id="app">
     <h1>Vue-Paginate v3.0</h1>
-    <paginate name="items" :list="items" ref="paginator" class="paginate-list">
-      <li v-for="item in paginated('items')">
+    <paginate
+      ref="paginator"
+      :list="items"
+      name="items"
+      class="paginate-list"
+    >
+      <li
+        v-for="(item, key) in paginated('items')"
+        :key="key"
+      >
         {{ item }}
       </li>
     </paginate>
-    <paginate-links for="items"
+    <paginate-links
       :show-step-links="true"
-    ></paginate-links>
-    <paginate-links for="items"
+      for="items"
+    />
+    <paginate-links
       :show-step-links="true"
       :limit="2"
       :step-links="{
         next: 'N',
         prev: 'P'
       }"
-    ></paginate-links>
-    <paginate-links for="items" :simple="{
-      next: 'Next »',
-      prev: '« Back'
-    }"></paginate-links>
+      for="items"
+    />
+    <paginate-links
+      :simple="{
+        next: 'Next »',
+        prev: '« Back'
+      }"
+      for="items"
+    />
     <span v-if="$refs.paginator">
-      Viewing {{$refs.paginator.pageItemsCount}} results
+      Viewing {{ $refs.paginator.pageItemsCount }} results
     </span>
   </div>
 </template>
 
 <script>
 export default {
-  data () {
+  data() {
     return {
-      items: ['Item One', 'Item Two', 'Item Three', 'Item Four', 'Item Five', 'Item Six', 'Item Seven', 'Item Eight', 'Item Nine', 'Item Ten', 'Item Eleven', 'Item Twelve', 'Item Thirteen'],
-      paginate: ['items']
-    }
-  }
-}
+      items: [
+        'Item One',
+        'Item Two',
+        'Item Three',
+        'Item Four',
+        'Item Five',
+        'Item Six',
+        'Item Seven',
+        'Item Eight',
+        'Item Nine',
+        'Item Ten',
+        'Item Eleven',
+        'Item Twelve',
+        'Item Thirteen',
+      ],
+      paginate: ['items'],
+    };
+  },
+};
 </script>
 
 <style lang="sass">
@@ -71,24 +98,24 @@ li
       content: '⚬ '
       font-weight: bold
       color: slategray
-    
+
 .paginate-links.items
   user-select: none
   a
     cursor: pointer
-  
+
   li.active a
     font-weight: bold
-  
+
   li.next:before
     content: ' | '
     margin-right: 13px
     color: #ddd
-  
+
   li.disabled a
     color: #ccc
     cursor: no-drop
-  
+
 a
   color: #42b983
 
