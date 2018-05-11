@@ -1,17 +1,29 @@
-import Vue from 'vue/dist/vue'
-import Paginate from '../src/components/Paginate'
+/* globals describe, it, expect, beforeEach  */
+
+import Vue from 'vue/dist/vue';
+import Paginate from '../src/components/Paginate';
 
 const LANGS = [
-  'JavaScript', 'PHP', 'HTML', 'CSS',
-  'Ruby', 'Python',
-  'Erlang', 'Go'
-]
+  'JavaScript',
+  'PHP',
+  'HTML',
+  'CSS',
+  'Ruby',
+  'Python',
+  'Erlang',
+  'Go',
+];
 
 describe('Paginate.vue', () => {
-  let vm
-  
+  let vm;
+
   beforeEach(() => {
     vm = new Vue({
+      components: { Paginate },
+      data: {
+        langs: LANGS,
+        paginate: { langs: { list: [], page: 0 } },
+      },
       template: `
       <div>
         <paginate
@@ -20,45 +32,52 @@ describe('Paginate.vue', () => {
           :per="2"
         ></paginate>
       </div>`,
-      data: {
-        langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }}
-      },
-      components: { Paginate }
-    }).$mount()
-  })
+    }).$mount();
+  });
 
   it('slices the list using `per` prop and stores the result in the paginate object', done => {
     Vue.nextTick(() => {
-      expect(vm.paginate.langs.list.length).to.equal(2)
-      expect(vm.paginate.langs.list).to.include.members(['JavaScript', 'PHP'])
-      expect(vm.paginate.langs.list).to.not.include.members(['HTML', 'CSS'])
-      done()
-    })
-  })
+      expect(vm.paginate.langs.list.length).to.equal(2);
+      expect(vm.paginate.langs.list).to.include.members(['JavaScript', 'PHP']);
+      expect(vm.paginate.langs.list).to.not.include.members(['HTML', 'CSS']);
+      done();
+    });
+  });
 
   it('can change pages', done => {
     // Note that page is 0-based
-    vm.paginate.langs.page = 1
+    vm.paginate.langs.page = 1;
     Vue.nextTick(() => {
-      expect(vm.paginate.langs.list).to.include.members(['HTML', 'CSS'])
-      expect(vm.paginate.langs.list).to.not.include.members(['JavaScript', 'PHP'])
-      done()
-    })
-  })
+      expect(vm.paginate.langs.list).to.include.members(['HTML', 'CSS']);
+      expect(vm.paginate.langs.list).to.not.include.members([
+        'JavaScript',
+        'PHP',
+      ]);
+      done();
+    });
+  });
 
   it('refreshes the paginated list and make sure the current page is not out of scope when the full list is changed', done => {
-    vm.paginate.langs.page = 1
-    vm.langs = ['foo', 'bar', 'baz', 'quix']
+    vm.paginate.langs.page = 1;
+    vm.langs = ['foo', 'bar', 'baz', 'quix'];
     Vue.nextTick(() => {
-      expect(vm.paginate.langs.list).to.include.members(['baz', 'quix'])
-      expect(vm.paginate.langs.list).to.not.include.members(['JavaScript', 'PHP'])
-      done()
-    })
-  })
+      expect(vm.paginate.langs.list).to.include.members(['baz', 'quix']);
+      expect(vm.paginate.langs.list).to.not.include.members([
+        'JavaScript',
+        'PHP',
+      ]);
+      done();
+    });
+  });
 
-  it('allows `per` prop to be dynamic', (done) => {
+  it('allows `per` prop to be dynamic', done => {
     vm = new Vue({
+      components: { Paginate },
+      data: {
+        langs: LANGS,
+        paginate: { langs: { list: [], page: 0 } },
+        dynamicPer: 3,
+      },
       template: `
       <div>
         <paginate
@@ -68,28 +87,27 @@ describe('Paginate.vue', () => {
           tag="div"
         ></paginate>
       </div>`,
-      data: {
-        langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }},
-        dynamicPer: 3
-      },
-      components: { Paginate }
-    }).$mount()
-    expect(vm.paginate.langs.list.length).to.equal(3)
-    vm.dynamicPer = 4
+    }).$mount();
+    expect(vm.paginate.langs.list.length).to.equal(3);
+    vm.dynamicPer = 4;
     Vue.nextTick(() => {
-      expect(vm.paginate.langs.list.length).to.equal(4)
-      expect(vm.paginate.langs.page).to.equal(0)
-      done()
-    })
-  })
+      expect(vm.paginate.langs.list.length).to.equal(4);
+      expect(vm.paginate.langs.page).to.equal(0);
+      done();
+    });
+  });
 
   it('uses UL as the default container tag', () => {
-    expect(vm.$el.children[0].tagName).to.equal('UL')
-  })
+    expect(vm.$el.children[0].tagName).to.equal('UL');
+  });
 
-  it('can change container tag', (done) => {
+  it('can change container tag', done => {
     vm = new Vue({
+      components: { Paginate },
+      data: {
+        langs: LANGS,
+        paginate: { langs: { list: [], page: 0 } },
+      },
       template: `
       <div>
         <paginate
@@ -99,20 +117,20 @@ describe('Paginate.vue', () => {
           tag="div"
         ></paginate>
       </div>`,
+    }).$mount();
+    Vue.nextTick(() => {
+      expect(vm.$el.children[0].tagName).to.equal('DIV');
+      done();
+    });
+  });
+
+  it('can set custom class', done => {
+    vm = new Vue({
+      components: { Paginate },
       data: {
         langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }}
+        paginate: { langs: { list: [], page: 0 } },
       },
-      components: { Paginate }
-    }).$mount()
-    Vue.nextTick(() => {
-      expect(vm.$el.children[0].tagName).to.equal('DIV')
-      done()
-    })
-  })
-
-  it('can set custom class', (done) => {
-    vm = new Vue({
       template: `
       <div>
         <paginate
@@ -122,20 +140,20 @@ describe('Paginate.vue', () => {
           class="test-paginate"
         ></paginate>
       </div>`,
+    }).$mount();
+    Vue.nextTick(() => {
+      expect(vm.$el.children[0].className).to.equal('test-paginate');
+      done();
+    });
+  });
+
+  it('goes to a specific page programmatically', done => {
+    vm = new Vue({
+      components: { Paginate },
       data: {
         langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }}
+        paginate: { langs: { list: [], page: 0 } },
       },
-      components: { Paginate }
-    }).$mount()
-    Vue.nextTick(() => {
-      expect(vm.$el.children[0].className).to.equal('test-paginate')
-      done()
-    })
-  })
-
-  it('goes to a specific page programmatically', (done) => {
-    vm = new Vue({
       template: `
       <div>
         <paginate ref="paginate"
@@ -145,23 +163,23 @@ describe('Paginate.vue', () => {
           class="test-paginate"
         ></paginate>
       </div>`,
+    }).$mount();
+    const paginator = vm.$refs.paginate;
+    expect(paginator.currentPage).to.equal(0);
+    paginator.goToPage(3);
+    Vue.nextTick(() => {
+      expect(paginator.currentPage).to.equal(2);
+      done();
+    });
+  });
+
+  it('has page items count descripiton', done => {
+    vm = new Vue({
+      components: { Paginate },
       data: {
         langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }}
+        paginate: { langs: { list: [], page: 0 } },
       },
-      components: { Paginate }
-    }).$mount()
-    const paginator = vm.$refs.paginate
-    expect(paginator.currentPage).to.equal(0)
-    paginator.goToPage(3)
-    Vue.nextTick(() => {
-      expect(paginator.currentPage).to.equal(2)
-      done()
-    })
-  })
-
-  it('has page items count descripiton', (done) => {
-    vm = new Vue({
       template: `
       <div>
         <paginate ref="paginate"
@@ -171,20 +189,15 @@ describe('Paginate.vue', () => {
           class="test-paginate"
         ></paginate>
       </div>`,
-      data: {
-        langs: LANGS,
-        paginate: {langs: { list: [], page: 0 }}
-      },
-      components: { Paginate }
-    }).$mount()
-    const paginator = vm.$refs.paginate
+    }).$mount();
+    const paginator = vm.$refs.paginate;
     Vue.nextTick(() => {
-      expect(paginator.pageItemsCount).to.equal('1-2 of 8')
-      vm.paginate.langs.page = 1
+      expect(paginator.pageItemsCount).to.equal('1-2 of 8');
+      vm.paginate.langs.page = 1;
       Vue.nextTick(() => {
-        expect(paginator.pageItemsCount).to.equal('3-4 of 8')
-        done()
-      })
-    })
-  })
-})
+        expect(paginator.pageItemsCount).to.equal('3-4 of 8');
+        done();
+      });
+    });
+  });
+});
