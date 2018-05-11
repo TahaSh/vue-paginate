@@ -460,6 +460,7 @@ Here's an example:
 ```html
 <paginate-links
   for="languages"
+  :simple="true"
   :classes="{
     'ul': 'simple-links-container',
     '.next > a': 'next-link',
