@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <h1>Vue-Paginate v3.0</h1>
+    <h1>Vue-Paginate v3.6</h1>
     <paginate
       ref="paginator"
       :list="items"
