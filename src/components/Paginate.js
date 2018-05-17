@@ -72,7 +72,6 @@ export default {
       if(value < 0) {
         this.currentPage = 0;
       }
-      
       this.paginateList()
     },
     list () {
