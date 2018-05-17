@@ -112,7 +112,10 @@
       this.paginateList()
     },
     watch: {
-      currentPage: function currentPage () {
+      currentPage: function currentPage (value) {
+        if(value < 0) {
+          this.currentPage = 0;
+        }
         this.paginateList()
       },
       list: function list () {

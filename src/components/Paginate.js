@@ -68,7 +68,10 @@ export default {
     this.paginateList()
   },
   watch: {
-    currentPage () {
+    currentPage (value) {
+      if(value < 0) {
+        this.currentPage = 0;
+      }
       this.paginateList()
     },
     list () {
