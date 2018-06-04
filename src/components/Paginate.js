@@ -72,8 +72,10 @@ export default {
       this.paginateList()
     },
     list () {
-      if (this.currentPage >= this.lastPage) {
+      if (this.currentPage >= this.lastPage && this.lastPage > 0) {
         this.currentPage = this.lastPage - 1
+      } else {
+        this.currentPage = 0
       }
       this.paginateList()
     },
