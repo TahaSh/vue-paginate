@@ -57,6 +57,14 @@ describe('Paginate.vue', () => {
     })
   })
 
+  it('makes sure currentPage is not < 0 when list is empty', done => {
+    vm.langs = []
+    Vue.nextTick(() => {
+      expect(vm.paginate.langs.page).to.equal(0)
+      done()
+    })
+  })
+
   it('allows `per` prop to be dynamic', (done) => {
     vm = new Vue({
       template: `
