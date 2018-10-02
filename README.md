@@ -68,7 +68,7 @@ new Vue({
   el: '#app',
   data: {
     langs: ['JavaScript', 'PHP', 'HTML', 'CSS', 'Ruby', 'Python', 'Erlang'],
-    paginate: ['languages']
+    paginate: ['langs']
   }
 })
 ```
