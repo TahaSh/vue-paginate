@@ -100,6 +100,7 @@ export default {
     'state': {
       handler () {
         this.updateListOfPages()
+        this.$emit('update', this.numberOfPages)
       },
       deep: true
     },

@@ -1,6 +1,6 @@
 /**
  * vue-paginate v3.6.0
- * (c) 2018 Taha Shashtari
+ * (c) 2020 Taha Shashtari
  * @license MIT
  */
 (function (global, factory) {
@@ -299,6 +299,7 @@
       'state': {
         handler: function handler () {
           this.updateListOfPages()
+          this.$emit('update', this.numberOfPages)
         },
         deep: true
       },
