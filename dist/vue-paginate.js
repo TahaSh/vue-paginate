@@ -1,6 +1,6 @@
 /**
  * vue-paginate v3.6.0
- * (c) 2018 Taha Shashtari
+ * (c) 2020 Taha Shashtari
  * @license MIT
  */
 (function (global, factory) {
