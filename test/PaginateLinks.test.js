@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue'
+import Vue from 'vue'
 import PaginateLinks from '../src/components/PaginateLinks'
 import Paginate from '../src/components/Paginate'
 
@@ -14,7 +14,7 @@ describe('PaginateLinks.vue', () => {
 
   describe('full links', () => {
 
-    it('renders a full list of links', (done) => {
+    test('renders a full list of links', (done) => {
       vm = new Vue({
         template: `
           <div>
@@ -33,7 +33,7 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
 
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="number active"><a>1</a></li>',
           '<li class="number"><a>2</a></li>',
           '<li class="number"><a>3</a></li>',
@@ -43,7 +43,7 @@ describe('PaginateLinks.vue', () => {
       })
     })
 
-    it('can show step links for full links', (done) => {
+    test('can show step links for full links', (done) => {
       vm = new Vue({
         template: `
           <div>
@@ -68,7 +68,7 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
 
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="left-arrow disabled"><a>P</a></li>',
           '<li class="number active"><a>1</a></li>',
           '<li class="number"><a>2</a></li>',
@@ -107,9 +107,9 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
     })
     
-    it('adds `disabled` class to previous link on first page', (done) => {
+    test('adds `disabled` class to previous link on first page', (done) => {
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="prev disabled"><a>Previous</a></li>',
           '<li class="next"><a>Next</a></li>'
         ].join(''))
@@ -117,10 +117,10 @@ describe('PaginateLinks.vue', () => {
       })
     })
     
-    it('doesn\'t add `disabled` class when we are not in first or final page', (done) => {
+    test('doesn\'t add `disabled` class when we are not in first or final page', (done) => {
       vm.paginate.langs.page++
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="prev"><a>Previous</a></li>',
           '<li class="next"><a>Next</a></li>'
         ].join(''))
@@ -128,10 +128,10 @@ describe('PaginateLinks.vue', () => {
       })
     })
 
-    it('adds `disabled` class to next link on final page', (done) => {
+    test('adds `disabled` class to next link on final page', (done) => {
       vm.paginate.langs.page = 3
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="prev"><a>Previous</a></li>',
           '<li class="next disabled"><a>Next</a></li>'
         ].join(''))
@@ -156,9 +156,9 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
     })
 
-    it('shows correct links with classes', (done) => {
+    test('shows correct links with classes', (done) => {
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="number active"><a>1</a></li>',
           '<li class="number"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
@@ -168,10 +168,10 @@ describe('PaginateLinks.vue', () => {
       })
     })
 
-    it('keeps displayed links the same if the targeted page is within current limited scope', (done) => {
+    test('keeps displayed links the same if the targeted page is within current limited scope', (done) => {
       vm.paginate.langs.page++
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="number"><a>1</a></li>',
           '<li class="number active"><a>2</a></li>',
           '<li class="ellipses"><a>…</a></li>',
@@ -181,10 +181,10 @@ describe('PaginateLinks.vue', () => {
       })
     })
 
-    it('changes the displayed links when the targeted page is out of current limited scope', (done) => {
+    test('changes the displayed links when the targeted page is out of current limited scope', (done) => {
       vm.paginate.langs.page = 3
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="number"><a>1</a></li>',
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>3</a></li>',
@@ -196,10 +196,10 @@ describe('PaginateLinks.vue', () => {
       })
     })
 
-    it('displays links properly when changing to the last page', (done) => {
+    test('displays links properly when changing to the last page', (done) => {
       vm.paginate.langs.page = 7
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+        expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
           '<li class="number"><a>1</a></li>',
           '<li class="ellipses"><a>…</a></li>',
           '<li class="number"><a>7</a></li>',
@@ -228,9 +228,9 @@ describe('PaginateLinks.vue', () => {
         }).$mount()
       })
 
-      it('can show step links for limited links', (done) => {
+      test('can show step links for limited links', (done) => {
         Vue.nextTick(() => {
-          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
             '<li class="left-arrow disabled"><a>«</a></li>',
             '<li class="number active"><a>1</a></li>',
             '<li class="number"><a>2</a></li>',
@@ -242,10 +242,10 @@ describe('PaginateLinks.vue', () => {
         })
       })
 
-      it('removes disabled class from left arrow if not on first page', (done) => {
+      test('removes disabled class from left arrow if not on first page', (done) => {
         vm.paginate.langs.page++
         Vue.nextTick(() => {
-          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
             '<li class="left-arrow"><a>«</a></li>',
             '<li class="number"><a>1</a></li>',
             '<li class="number active"><a>2</a></li>',
@@ -257,10 +257,10 @@ describe('PaginateLinks.vue', () => {
         })
       })
 
-      it('makes right arrow disabled if it is on last page', (done) => {
+      test('makes right arrow disabled if it is on last page', (done) => {
         vm.paginate.langs.page = 7
         Vue.nextTick(() => {
-          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
             '<li class="left-arrow"><a>«</a></li>',
             '<li class="number"><a>1</a></li>',
             '<li class="ellipses"><a>…</a></li>',
@@ -272,7 +272,7 @@ describe('PaginateLinks.vue', () => {
         })
       })
 
-      it('customizes the step links', (done) => {
+      test('customizes the step links', (done) => {
         vm = new Vue({
           template:
             `<div>
@@ -294,7 +294,7 @@ describe('PaginateLinks.vue', () => {
         }).$mount()
 
         Vue.nextTick(() => {
-          expect(vm.$el.querySelector('.paginate-links').innerHTML).to.equal([
+          expect(vm.$el.querySelector('.paginate-links').innerHTML).toBe([
             '<li class="left-arrow disabled"><a>P</a></li>',
             '<li class="number active"><a>1</a></li>',
             '<li class="number"><a>2</a></li>',
@@ -310,7 +310,7 @@ describe('PaginateLinks.vue', () => {
   })
 
   describe('all types', () => {
-    it('can be hidden if it contains a single page', (done) => {
+    test('can be hidden if it contains a single page', (done) => {
       vm = new Vue({
         template:
           `<div>
@@ -325,12 +325,12 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
 
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links')).to.be.null
+        expect(vm.$el.querySelector('.paginate-links')).toBeNull()
         done()
       })
     })
 
-    it('should not be hidden if it contains a single page and hide-single-page=false', (done) => {
+    test('should not be hidden if it contains a single page and hide-single-page=false', (done) => {
       vm = new Vue({
         template:
           `<div>
@@ -345,7 +345,7 @@ describe('PaginateLinks.vue', () => {
       }).$mount()
 
       Vue.nextTick(() => {
-        expect(vm.$el.querySelector('.paginate-links')).to.be.not.null
+        expect(vm.$el.querySelector('.paginate-links')).not.toBeNull()
         done()
       })
     })

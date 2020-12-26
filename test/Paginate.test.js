@@ -1,4 +1,4 @@
-import Vue from 'vue/dist/vue'
+import Vue from 'vue'
 import Paginate from '../src/components/Paginate'
 
 const LANGS = [
@@ -28,7 +28,7 @@ describe('Paginate.vue', () => {
     }).$mount()
   })
 
-  it('slices the list using `per` prop and stores the result in the paginate object', done => {
+  test('slices the list using `per` prop and stores the result in the paginate object', done => {
     Vue.nextTick(() => {
       expect(vm.paginate.langs.list.length).to.equal(2)
       expect(vm.paginate.langs.list).to.include.members(['JavaScript', 'PHP'])
@@ -37,7 +37,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('can change pages', done => {
+  test('can change pages', done => {
     // Note that page is 0-based
     vm.paginate.langs.page = 1
     Vue.nextTick(() => {
@@ -47,7 +47,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('refreshes the paginated list and make sure the current page is not out of scope when the full list is changed', done => {
+  test('refreshes the paginated list and make sure the current page is not out of scope when the full list is changed', done => {
     vm.paginate.langs.page = 1
     vm.langs = ['foo', 'bar', 'baz', 'quix']
     Vue.nextTick(() => {
@@ -57,7 +57,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('allows `per` prop to be dynamic', (done) => {
+  test('allows `per` prop to be dynamic', (done) => {
     vm = new Vue({
       template: `
       <div>
@@ -84,11 +84,11 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('uses UL as the default container tag', () => {
+  test('uses UL as the default container tag', () => {
     expect(vm.$el.children[0].tagName).to.equal('UL')
   })
 
-  it('can change container tag', (done) => {
+  test('can change container tag', (done) => {
     vm = new Vue({
       template: `
       <div>
@@ -111,7 +111,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('can set custom class', (done) => {
+  test('can set custom class', (done) => {
     vm = new Vue({
       template: `
       <div>
@@ -134,7 +134,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('goes to a specific page programmatically', (done) => {
+  test('goes to a specific page programmatically', (done) => {
     vm = new Vue({
       template: `
       <div>
@@ -160,7 +160,7 @@ describe('Paginate.vue', () => {
     })
   })
 
-  it('has page items count descripiton', (done) => {
+  test('has page items count descripiton', (done) => {
     vm = new Vue({
       template: `
       <div>

@@ -1,7 +1,12 @@
-import { LEFT_ARROW, RIGHT_ARROW, ELLIPSES } from '../config/linkTypes'
+import { ELLIPSES } from '../config/linkTypes'
 
 export default class LimitedLinksGenerator {
-  constructor (listOfPages, currentPage, limit) {
+  listOfPages: number[]
+  currentPage: number
+  limit: number
+  lastPage: number
+
+  constructor(listOfPages: number[], currentPage: number, limit: number) {
     this.listOfPages = listOfPages
     this.lastPage = listOfPages.length - 1
     this.currentPage = currentPage === this.lastPage
@@ -10,18 +15,19 @@ export default class LimitedLinksGenerator {
     this.limit = limit
   }
 
-  generate () {
+  generate() {
     const firstHalf = this._buildFirstHalf()
     let secondHalf = this._buildSecondHalf()
     return [...firstHalf, ...secondHalf]
   }
 
-  _buildFirstHalf () {
+  _buildFirstHalf() {
     const firstHalf = this._allPagesButLast()
       .slice(
         this._currentChunkIndex(),
         this._currentChunkIndex() + this.limit
-      )
+      ) as (number | string)[]
+
     // Add backward ellipses with first page if needed
     if (this.currentPage >= this.limit) {
       firstHalf.unshift(ELLIPSES)
@@ -34,17 +40,17 @@ export default class LimitedLinksGenerator {
     return firstHalf
   }
 
-  _buildSecondHalf () {
+  _buildSecondHalf() {
     const secondHalf = [this.lastPage]
     return secondHalf
   }
 
-  _currentChunkIndex () {
+  _currentChunkIndex() {
     const currentChunk = Math.floor(this.currentPage / this.limit)
-    return currentChunk * this.limit 
+    return currentChunk * this.limit
   }
 
-  _allPagesButLast () {
+  _allPagesButLast() {
     return this.listOfPages.filter(n => n !== this.lastPage)
   }
 }
