@@ -1,25 +1,25 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/Cellar/yarn/1.22.10/libexec/bin/yarn.js jest
+  /opt/homebrew/Cellar/node/15.5.0/bin/node /opt/homebrew/Cellar/yarn/1.22.10/libexec/bin/yarn.js test
 
 PATH: 
-  /Users/futabanzu/.jenv/shims:/Users/futabanzu/.jenv/bin:/Users/futabanzu/.composer/vendor/bin:/Users/futabanzu/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin:/Applications/VMware Fusion.app/Contents/Public:/usr/local/share/dotnet:~/.dotnet/tools:/usr/local/MacGPG2/bin:/Library/TeX/texbin
+  /opt/homebrew/bin:/Users/futabanzu/.cargo/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
 
 Yarn version: 
   1.22.10
 
 Node version: 
-  15.1.0
+  15.5.0
 
 Platform: 
-  darwin x64
+  darwin arm64
 
 Trace: 
-  SyntaxError: /Users/futabanzu/uyan/vue-paginate/package.json: Unexpected token } in JSON at position 1144
+  SyntaxError: /Users/futabanzu/uyan/vue-paginate/package.json: Unexpected token } in JSON at position 487
       at JSON.parse (<anonymous>)
-      at /usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:1625:59
+      at /opt/homebrew/Cellar/yarn/1.22.10/libexec/lib/cli.js:1625:59
       at Generator.next (<anonymous>)
-      at step (/usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:310:30)
-      at /usr/local/Cellar/yarn/1.22.10/libexec/lib/cli.js:321:13
+      at step (/opt/homebrew/Cellar/yarn/1.22.10/libexec/lib/cli.js:310:30)
+      at /opt/homebrew/Cellar/yarn/1.22.10/libexec/lib/cli.js:321:13
 
 npm manifest: 
   {
@@ -44,7 +44,9 @@ npm manifest:
       "slice",
       "vue"
     ],
-    "dependencies": {},
+    "dependencies": {
+      "@vue/composition-api": "^1.0.0-beta.22",
+    },
     "devDependencies": {
       "@rollup/plugin-typescript": "^8.1.0",
       "@types/jest": "^26.0.19",
@@ -60,22 +62,7 @@ npm manifest:
     "author": "Taha Shashtari",
     "license": "MIT",
     "peerDependencies": {
-      "@vue/composition-api": "^1.0.0-beta.22",
       "vue": "^2.6.12"
-    },
-    "jest": {
-      "moduleFileExtensions": [
-        "ts",
-        "js"
-      ],
-      "transform": {
-        "^.+\\.ts$": "ts-jest"
-      },
-      "globals": {
-        "ts-jest": {
-          "tsConfig": "tsconfig.json"
-        }
-      },
     }
   }
 
