@@ -1,6 +1,7 @@
+import Vue, { PropType } from 'vue'
 import { warn } from '../util/debug'
 
-export default {
+export default Vue.extend({
   name: 'paginate',
   props: {
     name: {
@@ -14,7 +15,7 @@ export default {
     per: {
       type: Number,
       default: 3,
-      validator (value) {
+      validator(value) {
         return value > 0
       }
     },
@@ -23,41 +24,43 @@ export default {
       default: 'ul'
     },
     container: {
-      type: Object,
+      type: Object /*as PropType<Vue | null>*/,
       default: null
     }
   },
-  data () {
+  data() {
     return {
       initialListSize: this.list.length
     }
   },
   computed: {
-    parent () {
+    parent() {
       return this.container ? this.container : this.$parent
     },
     currentPage: {
-      get () {
+      get() {
         if (this.parent.paginate[this.name]) {
           return this.parent.paginate[this.name].page
         }
+
+        return 0
       },
-      set (page) {
+      set(page) {
         this.parent.paginate[this.name].page = page
       }
     },
-    pageItemsCount () {
+    pageItemsCount() {
       const numOfItems = this.list.length
       const first = this.currentPage * this.per + 1
       const last = Math.min((this.currentPage * this.per) + this.per, numOfItems)
       return `${first}-${last} of ${numOfItems}`
     },
 
-    lastPage () {
+    lastPage() {
       return Math.ceil(this.list.length / this.per)
     }
   },
-  mounted () {
+  mounted() {
     if (this.per <= 0) {
       warn(`<paginate name="${this.name}"> 'per' prop can't be 0 or less.`, this.parent)
     }
@@ -68,27 +71,27 @@ export default {
     this.paginateList()
   },
   watch: {
-    currentPage () {
+    currentPage() {
       this.paginateList()
     },
-    list () {
+    list() {
       if (this.currentPage >= this.lastPage) {
         this.currentPage = this.lastPage - 1
       }
       this.paginateList()
     },
-    per () {
+    per() {
       this.currentPage = 0
       this.paginateList()
     }
   },
   methods: {
-    paginateList () {
+    paginateList() {
       const index = this.currentPage * this.per
       const paginatedList = this.list.slice(index, index + this.per)
       this.parent.paginate[this.name].list = paginatedList
     },
-    goToPage (page) {
+    goToPage(page) {
       const lastPage = Math.ceil(this.list.length / this.per)
       if (page > lastPage) {
         warn(`You cannot go to page ${page}. The last page is ${lastPage}.`, this.parent)
@@ -97,7 +100,7 @@ export default {
       this.currentPage = page - 1
     }
   },
-  render (h) {
+  render(h) {
     return h(this.tag, {}, this.$slots.default)
   }
-}
+})

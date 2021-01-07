@@ -1,8 +1,9 @@
+import Vue from 'vue'
 import LimitedLinksGenerator from '../util/LimitedLinksGenerator'
 import { LEFT_ARROW, RIGHT_ARROW, ELLIPSES } from '../config/linkTypes'
 import { warn } from '../util/debug'
 
-export default {
+export default Vue.extend({
   name: 'paginate-links',
   props: {
     for: {
@@ -144,7 +145,7 @@ export default {
     }
     return el
   }
-}
+})
 
 function getFullLinks (vm, h) {
   const allLinks = vm.showStepLinks
